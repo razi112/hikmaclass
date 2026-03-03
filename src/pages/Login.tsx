@@ -6,13 +6,27 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Mail, Lock, User, Phone, UserPlus, LogIn } from 'lucide-react';
+import { Mail, Lock, User, Phone, UserPlus, LogIn, Upload, Camera } from 'lucide-react';
 import { addStudent } from '@/data/sampleData';
 import { toast } from 'sonner';
 
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string>('');
   const navigate = useNavigate();
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setProfilePhoto(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhotoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSignIn = (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,7 +48,6 @@ const Login = () => {
     const phone = formData.get('phone') as string;
     const admissionNumber = formData.get('admissionNumber') as string;
     const rollNumber = formData.get('rollNumber') as string;
-    const bloodGroup = formData.get('bloodGroup') as string;
     const parentName = formData.get('parentName') as string;
     const password = formData.get('password') as string;
     const confirmPassword = formData.get('confirmPassword') as string;
@@ -45,6 +58,9 @@ const Login = () => {
       return;
     }
 
+    // Use uploaded photo or generate avatar
+    const photoUrl = photoPreview || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=1e3a5f&color=fff&size=300&font-size=0.4&bold=true`;
+
     // Create new student
     const newStudent = {
       name,
@@ -52,9 +68,8 @@ const Login = () => {
       phone,
       admissionNumber,
       rollNumber,
-      bloodGroup,
       parentName,
-      photo: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=1e3a5f&color=fff&size=300&font-size=0.4&bold=true`,
+      photo: photoUrl,
       classYear: 'Class of 2024',
       graduationYear: 2024,
       department: 'Hikma Class Union',
@@ -184,6 +199,32 @@ const Login = () => {
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleRegister} className="space-y-4">
+                    {/* Profile Photo Upload */}
+                    <div className="space-y-2">
+                      <Label htmlFor="profile-photo">Profile Photo</Label>
+                      <div className="flex items-center gap-4">
+                        <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center overflow-hidden border-2 border-border">
+                          {photoPreview ? (
+                            <img src={photoPreview} alt="Preview" className="w-full h-full object-cover" />
+                          ) : (
+                            <Camera className="w-8 h-8 text-muted-foreground" />
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <Input
+                            id="profile-photo"
+                            type="file"
+                            accept="image/*"
+                            onChange={handlePhotoChange}
+                            className="cursor-pointer"
+                          />
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Upload a profile photo (optional)
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="register-name">Full Name</Label>
@@ -244,28 +285,15 @@ const Login = () => {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="register-roll">Roll Number</Label>
-                        <Input
-                          id="register-roll"
-                          name="rollNumber"
-                          type="text"
-                          placeholder="1"
-                          required
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="register-blood">Blood Group</Label>
-                        <Input
-                          id="register-blood"
-                          name="bloodGroup"
-                          type="text"
-                          placeholder="O+"
-                          required
-                        />
-                      </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="register-roll">Roll Number</Label>
+                      <Input
+                        id="register-roll"
+                        name="rollNumber"
+                        type="text"
+                        placeholder="1"
+                        required
+                      />
                     </div>
 
                     <div className="space-y-2">
