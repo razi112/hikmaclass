@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      image_metadata: {
+        Row: {
+          file_name: string
+          title: string
+          created_at: string
+        }
+        Insert: {
+          file_name: string
+          title: string
+          created_at?: string
+        }
+        Update: {
+          file_name?: string
+          title?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
+      video_metadata: {
+        Row: {
+          file_name: string
+          title: string
+          thumbnail_url: string | null
+          created_at: string
+        }
+        Insert: {
+          file_name: string
+          title: string
+          thumbnail_url?: string | null
+          created_at?: string
+        }
+        Update: {
+          file_name?: string
+          title?: string
+          thumbnail_url?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
       attendance_records: {
         Row: {
           created_at: string

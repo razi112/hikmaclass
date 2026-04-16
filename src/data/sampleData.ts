@@ -61,7 +61,11 @@ export const getRegisteredStudents = async (): Promise<Student[]> => {
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.error('Error fetching students:', error);
+      if (error.code === 'PGRST205') {
+        console.warn('Supabase table "students" not found (PGRST205). Please apply the SQL migrations in supabase/migrations/ to your database. Returning empty list.');
+      } else {
+        console.error('Error fetching students:', error);
+      }
       return [];
     }
 

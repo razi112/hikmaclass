@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Users, Calendar, Award } from 'lucide-react';
+import { ArrowRight, Users, Calendar, Award, BookOpen, Mic, Globe, Fingerprint } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AnimateIn } from '@/components/AnimateIn';
 import { TypingAnimation } from '@/components/TypingAnimation';
 
 export const HeroSection = () => {
   return (
-    <section className="relative min-h-[90vh] flex items-center hero-gradient overflow-hidden">
+    <section className="relative min-h-screen flex items-center hero-gradient overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-20 left-10 w-72 h-72 bg-secondary rounded-full blur-3xl" />
@@ -16,13 +16,50 @@ export const HeroSection = () => {
       <div className="container mx-auto px-4 py-20 relative z-10">
         <div className="max-w-4xl mx-auto">
           <div className="text-center">
-            <AnimateIn direction="down" delay={100}>
+
+            {/* Floating icon cluster */}
+            <AnimateIn direction="up" delay={200}>
+              <div className="relative flex items-center justify-center h-36 -mt-10 mb-4 select-none">
+                {/* Top-left: Book */}
+                <div className="absolute" style={{ top: '0px', left: 'calc(50% - 110px)' }}>
+                  <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur border border-white/15 flex items-center justify-center shadow-lg animate-float" style={{ animationDelay: '0s' }}>
+                    <BookOpen className="w-5 h-5 text-white/80" />
+                  </div>
+                </div>
+                {/* Top-right: Mic */}
+                <div className="absolute" style={{ top: '0px', left: 'calc(50% + 50px)' }}>
+                  <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur border border-white/15 flex items-center justify-center shadow-lg animate-float" style={{ animationDelay: '0.8s' }}>
+                    <Mic className="w-5 h-5 text-white/80" />
+                  </div>
+                </div>
+                {/* Center: Turban / Islamic crescent */}
+                <div className="absolute" style={{ top: '18px', left: 'calc(50% - 32px)' }}>
+                  <div className="w-16 h-16 rounded-2xl bg-[#3a3a1a]/80 backdrop-blur border border-yellow-700/40 flex items-center justify-center shadow-xl animate-float" style={{ animationDelay: '0.4s' }}>
+                    <span className="text-3xl leading-none">🕌</span>
+                  </div>
+                </div>
+                {/* Middle-left: Globe */}
+                <div className="absolute" style={{ top: '44px', left: 'calc(50% - 170px)' }}>
+                  <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur border border-white/15 flex items-center justify-center shadow-lg animate-float" style={{ animationDelay: '1.2s' }}>
+                    <Globe className="w-5 h-5 text-white/80" />
+                  </div>
+                </div>
+                {/* Middle-right: Fingerprint */}
+                <div className="absolute" style={{ top: '44px', left: 'calc(50% + 110px)' }}>
+                  <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur border border-white/15 flex items-center justify-center shadow-lg animate-float" style={{ animationDelay: '1.6s' }}>
+                    <Fingerprint className="w-5 h-5 text-white/80" />
+                  </div>
+                </div>
+              </div>
+            </AnimateIn>
+
+            <AnimateIn direction="down" delay={300}>
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/20 text-secondary mb-6">
                 <Award className="w-4 h-4" />
                 <span className="text-sm font-medium">Excellence Through Unity</span>
               </div>
             </AnimateIn>
-            
+
             <div className="mb-6">
               <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground leading-tight min-h-[1.2em]">
                 <TypingAnimation 

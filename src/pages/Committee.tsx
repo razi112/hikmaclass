@@ -18,7 +18,7 @@ const getAvatarUrl = (name: string) => {
 const committeeMembers: CommitteeMember[] = [
   { id: '1', name: 'Aman', position: 'President', photo: getAvatarUrl('Aman'), email: 'president@hikma.edu' },
   { id: '2', name: 'Nihal', position: 'Vice President', photo: getAvatarUrl('Nihal'), email: 'vp@hikma.edu' },
-  { id: '3', name: 'Rayyan', position: 'Secretary', photo: getAvatarUrl('Rayyan'), email: 'secretary@hikma.edu' },
+  { id: '3', name: 'Ameen', position: 'Secretary', photo: getAvatarUrl('Rayyan'), email: 'secretary@hikma.edu' },
   { id: '4', name: 'Yaseen', position: 'Treasurer', photo: getAvatarUrl('Yaseen'), email: 'treasurer@hikma.edu' },
   { id: '5', name: 'Nahash', position: 'Event Coordinator', photo: getAvatarUrl('Nahash') },
   { id: '6', name: 'Nadih', position: 'Public Relations', photo: getAvatarUrl('Nadih') },

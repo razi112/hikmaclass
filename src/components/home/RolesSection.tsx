@@ -15,12 +15,12 @@ const roles = [
   },
   {
     icon: BookOpen,
-    title: 'Teachers',
+    title: 'Class Teacher',
     emoji: '👨‍🏫',
     features: [
-      { icon: ClipboardList, label: 'Mark Attendance' },
-      { icon: Bell, label: 'Post Announcements' },
-      { icon: Users, label: 'View Student Data' },
+      { icon: ClipboardList, label: 'Ahmed Dilqash Furqani' },
+      { icon: Bell, label: 'Hifz completer' },
+     
     ],
   },
   {

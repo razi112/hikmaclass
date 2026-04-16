@@ -45,15 +45,15 @@ export const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-center gap-2 text-sm opacity-80">
                 <Mail className="w-4 h-4" />
-                <span>info@hikmaclassunion.org</span>
+                <span>hikmaclassunion@gmail.com</span>
               </li>
               <li className="flex items-center gap-2 text-sm opacity-80">
                 <Phone className="w-4 h-4" />
-                <span>+234 800 123 4567</span>
+                <span>+91 9746711804</span>
               </li>
               <li className="flex items-start gap-2 text-sm opacity-80">
                 <MapPin className="w-4 h-4 mt-0.5" />
-                <span>123 University Road,<br />Lagos, Nigeria</span>
+                <span>Kozhikode Medical College Road<br />Virippadam Oorkadvu</span>
               </li>
             </ul>
           </div>
@@ -87,7 +87,7 @@ export const Footer = () => {
         </div>
 
         <div className="border-t border-primary-foreground/20 mt-10 pt-6 text-center text-sm opacity-60">
-          <p>© 2024 Hikma Class Union. All rights reserved.</p>
+          <p>© 2026 Hikma Class Union. All rights reserved.</p>
         </div>
       </div>
     </footer>
