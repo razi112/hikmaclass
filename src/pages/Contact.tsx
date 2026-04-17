@@ -71,8 +71,8 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="font-semibold text-foreground mb-1">Phone</h3>
-                      <p className="text-muted-foreground text-sm">+234 800 123 4567</p>
-                      <p className="text-muted-foreground text-sm">+234 800 987 6543</p>
+                      <p className="text-muted-foreground text-sm">+91 9746711804</p>
+                      <p className="text-muted-foreground text-sm">+91 9961293697</p>
                     </div>
                   </div>
                 </CardContent>
@@ -86,8 +86,8 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="font-semibold text-foreground mb-1">Address</h3>
-                      <p className="text-muted-foreground text-sm">123 University Road</p>
-                      <p className="text-muted-foreground text-sm">Lagos, Nigeria</p>
+                      <p className="text-muted-foreground text-sm">Kozhikode Medical College Road </p>
+                      <p className="text-muted-foreground text-sm">Akode , Virippadam</p>
                     </div>
                   </div>
                 </CardContent>

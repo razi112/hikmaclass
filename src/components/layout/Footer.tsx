@@ -26,13 +26,22 @@ export const Footer = () => {
           <div>
             <h4 className="font-serif font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-2">
-              {['Home', 'Students', 'Events', 'Gallery', 'Contact'].map((item) => (
-                <li key={item}>
+              {[
+                { name: 'Home', path: '/' },
+                { name: 'About', path: '/about' },
+                { name: 'Committee', path: '/committee' },
+                { name: 'Wings', path: '/wings' },
+                { name: 'Students', path: '/students' },
+                { name: 'Events', path: '/events' },
+                { name: 'Gallery', path: '/gallery' },
+                { name: 'Contact', path: '/contact' },
+              ].map((item) => (
+                <li key={item.name}>
                   <Link
-                    to={item === 'Home' ? '/' : `/${item.toLowerCase()}`}
+                    to={item.path}
                     className="text-sm opacity-80 hover:opacity-100 transition-opacity"
                   >
-                    {item}
+                    {item.name}
                   </Link>
                 </li>
               ))}

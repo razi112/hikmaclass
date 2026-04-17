@@ -254,14 +254,13 @@
   }
 
   /* ── Global div hover: smooth stylish transition ── */
-  div {
+  /* Exclude fixed/sticky containers and their children */
+  div:not([class*="fixed"]):not([class*="sticky"]):not(nav *):not(header *) {
     transition:
-      transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-      box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
       background-color 0.4s ease,
       border-color 0.4s ease,
       opacity 0.4s ease,
-      filter 0.4s ease;
+      box-shadow 0.4s ease;
   }
 
   /* Hover effects */
@@ -367,6 +366,21 @@
     100% { background-position: 200% 0; }
   }
 
+  @keyframes shimmerSweep {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(200%); }
+  }
+
+  @property --angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+  }
+
+  @keyframes rotateBorder {
+    to { --angle: 360deg; }
+  }
+
   /* Page transitions */
   .page-transition {
     animation: pageEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -397,4 +411,93 @@
     pointer-events: none;
     opacity: 0.4;
   }
+}
+
+/* ── Global smooth scroll ── */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ── Page enter animation ── */
+.page-enter {
+  animation: pageEnterFade 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes pageEnterFade {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── data-animate scroll reveal system ── */
+[data-animate] {
+  opacity: 0;
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+[data-animate].in-view {
+  opacity: 1;
+  transform: none !important;
+  filter: none !important;
+}
+
+[data-animate="up"]    { transform: translateY(48px); }
+[data-animate="down"]  { transform: translateY(-48px); }
+[data-animate="left"]  { transform: translateX(48px); }
+[data-animate="right"] { transform: translateX(-48px); }
+[data-animate="scale"] { transform: scale(0.88); }
+[data-animate="fade"]  { transform: none; }
+[data-animate="blur"]  { transform: translateY(24px); filter: blur(10px); }
+[data-animate="zoom"]  { transform: scale(0.75); }
+
+/* stagger delays via data-delay */
+[data-delay="100"] { transition-delay: 100ms; }
+[data-delay="150"] { transition-delay: 150ms; }
+[data-delay="200"] { transition-delay: 200ms; }
+[data-delay="250"] { transition-delay: 250ms; }
+[data-delay="300"] { transition-delay: 300ms; }
+[data-delay="400"] { transition-delay: 400ms; }
+[data-delay="500"] { transition-delay: 500ms; }
+[data-delay="600"] { transition-delay: 600ms; }
+
+/* ── Smooth link & button micro-interactions ── */
+a, button {
+  transition:
+    color 0.25s ease,
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    opacity 0.25s ease,
+    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ── Image smooth load ── */
+img {
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Section fade-up helper (use on any section) ── */
+.section-animate > * {
+  opacity: 0;
+  transform: translateY(32px);
+  transition:
+    opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.section-animate.in-view > * {
+  opacity: 1;
+  transform: none;
+}
+.section-animate.in-view > *:nth-child(1) { transition-delay: 0ms; }
+.section-animate.in-view > *:nth-child(2) { transition-delay: 80ms; }
+.section-animate.in-view > *:nth-child(3) { transition-delay: 160ms; }
+.section-animate.in-view > *:nth-child(4) { transition-delay: 240ms; }
+.section-animate.in-view > *:nth-child(5) { transition-delay: 320ms; }
+.section-animate.in-view > *:nth-child(6) { transition-delay: 400ms; }
+
+/* ── Navbar wrapper always fixed, never moves ── */
+.navbar-wrapper {
+  transform: none !important;
+  transition: none !important;
+  will-change: auto;
 }

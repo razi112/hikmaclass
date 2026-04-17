@@ -94,7 +94,7 @@ const AdminLogin = () => {
             </Button>
           </form>
 
-          <p className="text-xs text-muted-foreground text-center mt-4">
+          <p className="text-xs text-muted-foreground text-center mt-4 hidden">
             Demo credentials: admin@hikma.org / admin123
           </p>
         </CardContent>

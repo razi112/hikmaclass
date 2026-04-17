@@ -1,9 +1,10 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {
-  Users, Calendar, Newspaper, Settings, LogOut, GraduationCap, TrendingUp,
-  Bell, Upload, Trash2, Loader2, ArrowUpRight, Sparkles, ImageIcon, Video,
-  X, Pencil, Check, Plus, Save
+  Users, Calendar, Newspaper, LogOut, GraduationCap,
+  Upload, Trash2, Loader2,
+  X, Pencil, Check, Plus, Save, UserCog,
+  Sparkles, ImageIcon, Video
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -85,6 +86,20 @@ const AdminDashboard = () => {
   const [editingNews, setEditingNews] = useState<NewsItem|null>(null);
   const [savingNews, setSavingNews] = useState(false);
 
+  // committee state
+  type CommitteeMember = { id: string; name: string; position: string; photo: string };
+  const emptyMember: Omit<CommitteeMember,'id'> = { name:'', position:'', photo:'' };
+  const [committee, setCommittee] = useState<CommitteeMember[]>([]);
+  const [loadingCommittee, setLoadingCommittee] = useState(true);
+  const [showAddMember, setShowAddMember] = useState(false);
+  const [newMember, setNewMember] = useState<Omit<CommitteeMember,'id'>>(emptyMember);
+  const [editingMember, setEditingMember] = useState<CommitteeMember|null>(null);
+  const [savingMember, setSavingMember] = useState(false);
+  const [uploadingMemberPhotoId, setUploadingMemberPhotoId] = useState<string|null>(null);
+  const [uploadingNewMemberPhoto, setUploadingNewMemberPhoto] = useState(false);
+  const newMemberPhotoRef = useRef<HTMLInputElement>(null);
+  const memberPhotoRefs = useRef<Record<string, HTMLInputElement | null>>({});
+
   // ── fetch helpers ──────────────────────────────────────────────────────────
   const fetchStudents = async () => {
     setLoadingStudents(true);
@@ -107,12 +122,20 @@ const AdminDashboard = () => {
     setLoadingNews(false);
   };
 
+  const fetchCommittee = async () => {
+    setLoadingCommittee(true);
+    const { data, error } = await (supabase as any).from('committee_members').select('*').order('created_at', { ascending: true });
+    if (!error && data) setCommittee(data.map((m:any) => ({ id:m.id, name:m.name, position:m.position, photo:m.photo??'' })));
+    setLoadingCommittee(false);
+  };
+
   useEffect(() => {
     const isLoggedIn = localStorage.getItem('adminLoggedIn');
     if (!isLoggedIn) { navigate('/admin'); return; }
     fetchStudents();
     fetchEvents();
     fetchNews();
+    fetchCommittee();
   }, [navigate]);
 
   // ── student mutations ──────────────────────────────────────────────────────
@@ -260,6 +283,78 @@ const AdminDashboard = () => {
     if (error) { toast({ title:'Delete failed', description:error.message, variant:'destructive' }); return; }
     toast({ title:'News deleted' });
     fetchNews();
+  };
+
+  // ── committee mutations ────────────────────────────────────────────────────
+  const COMMITTEE_PHOTO_BUCKET = 'committee-photos';
+
+  const uploadMemberPhoto = async (file: File): Promise<string | null> => {
+    const fileName = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+    const { error } = await supabase.storage
+      .from(COMMITTEE_PHOTO_BUCKET)
+      .upload(fileName, file, { contentType: file.type, upsert: false });
+    if (error) {
+      toast({ title: 'Photo upload failed', description: error.message, variant: 'destructive' });
+      return null;
+    }
+    return supabase.storage.from(COMMITTEE_PHOTO_BUCKET).getPublicUrl(fileName).data.publicUrl;
+  };
+
+  const handleNewMemberPhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]; if (!file) return;
+    setUploadingNewMemberPhoto(true);
+    const url = await uploadMemberPhoto(file);
+    setUploadingNewMemberPhoto(false);
+    if (url) setNewMember(m => ({ ...m, photo: url }));
+    e.target.value = '';
+  };
+
+  const handleMemberPhotoChange = async (e: React.ChangeEvent<HTMLInputElement>, memberId: string) => {
+    const file = e.target.files?.[0]; if (!file) return;
+    setUploadingMemberPhotoId(memberId);
+    const url = await uploadMemberPhoto(file);
+    if (url) {
+      const { error } = await (supabase as any).from('committee_members').update({ photo: url }).eq('id', memberId);
+      if (error) toast({ title: 'Failed to update photo', variant: 'destructive' });
+      else { toast({ title: 'Photo updated' }); fetchCommittee(); }
+    }
+    setUploadingMemberPhotoId(null);
+    e.target.value = '';
+  };
+
+  const handleRemoveMemberPhoto = async (memberId: string) => {
+    const { error } = await (supabase as any).from('committee_members').update({ photo: '' }).eq('id', memberId);
+    if (error) { toast({ title: 'Failed to remove photo', variant: 'destructive' }); return; }
+    toast({ title: 'Photo removed' });
+    fetchCommittee();
+  };
+
+  const handleSaveMember = async () => {
+    const payload = editingMember ?? newMember;
+    if (!payload.name.trim()) { toast({ title: 'Name is required', variant: 'destructive' }); return; }
+    setSavingMember(true);
+    if (editingMember) {
+      const { error } = await (supabase as any).from('committee_members').update({ name: editingMember.name, position: editingMember.position, photo: editingMember.photo }).eq('id', editingMember.id);
+      setSavingMember(false);
+      if (error) { toast({ title: 'Update failed', description: error.message, variant: 'destructive' }); return; }
+      toast({ title: 'Member updated' });
+      setEditingMember(null);
+    } else {
+      const { error } = await (supabase as any).from('committee_members').insert([{ name: newMember.name, position: newMember.position, photo: newMember.photo }]);
+      setSavingMember(false);
+      if (error) { toast({ title: 'Add failed', description: error.message, variant: 'destructive' }); return; }
+      toast({ title: 'Member added' });
+      setNewMember(emptyMember);
+      setShowAddMember(false);
+    }
+    fetchCommittee();
+  };
+
+  const handleDeleteMember = async (id: string) => {
+    const { error } = await (supabase as any).from('committee_members').delete().eq('id', id);
+    if (error) { toast({ title: 'Delete failed', description: error.message, variant: 'destructive' }); return; }
+    toast({ title: 'Member removed' });
+    fetchCommittee();
   };
 
   // ── gallery queries ────────────────────────────────────────────────────────
@@ -844,6 +939,156 @@ const AdminDashboard = () => {
                 ))}
               </div>
             )}
+          </CardContent>
+        </Card>
+
+        {/* ── COMMITTEE ────────────────────────────────────────────────────── */}
+        <Card className="border-white/10 bg-zinc-900">
+          <CardHeader>
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <CardTitle className="flex items-center gap-3 text-white font-serif text-2xl">
+                <div className="w-10 h-10 rounded-xl bg-teal-500/20 flex items-center justify-center"><UserCog className="w-5 h-5 text-teal-400" /></div>
+                Committee Members
+              </CardTitle>
+              <Button size="sm" onClick={() => setShowAddMember(v=>!v)} className="gap-2 bg-white text-black hover:bg-white/90">
+                <Plus className="w-4 h-4" />{showAddMember ? 'Cancel' : 'Add Member'}
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {/* Add form */}
+            {showAddMember && (
+              <div className="mb-6 p-4 rounded-xl bg-zinc-800 border border-white/10 space-y-3">
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <Field label="Name *" value={newMember.name} onChange={v=>setNewMember(m=>({...m,name:v}))} placeholder="Full name" />
+                  <Field label="Position *" value={newMember.position} onChange={v=>setNewMember(m=>({...m,position:v}))} placeholder="e.g. President" />
+                </div>
+                {/* photo upload for new member */}
+                <div>
+                  <label className="text-xs text-white/50 mb-1 block">Profile Photo</label>
+                  <div className="flex items-center gap-3">
+                    {newMember.photo
+                      ? <img src={newMember.photo} alt="preview" className="w-12 h-12 rounded-full object-cover border border-white/20" />
+                      : <div className="w-12 h-12 rounded-full bg-zinc-700 border border-white/10 flex items-center justify-center text-white/30 text-xs">No photo</div>
+                    }
+                    <input ref={newMemberPhotoRef} type="file" accept="image/*" className="hidden" onChange={handleNewMemberPhotoChange} />
+                    <Button size="sm" variant="outline" onClick={() => newMemberPhotoRef.current?.click()}
+                      disabled={uploadingNewMemberPhoto} className="gap-2 border-white/20 text-white/70 bg-transparent hover:bg-white/10">
+                      {uploadingNewMemberPhoto ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+                      {uploadingNewMemberPhoto ? 'Uploading...' : 'Upload Photo'}
+                    </Button>
+                    {newMember.photo && (
+                      <Button size="sm" variant="outline" onClick={() => setNewMember(m=>({...m,photo:''}))}
+                        className="gap-2 border-red-500/30 text-red-400 bg-transparent hover:bg-red-500/20">
+                        <Trash2 className="w-3.5 h-3.5" /> Remove
+                      </Button>
+                    )}
+                  </div>
+                </div>
+                <Button size="sm" onClick={handleSaveMember} disabled={savingMember} className="gap-2 bg-teal-600 hover:bg-teal-500 text-white">
+                  {savingMember ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                  {savingMember ? 'Saving...' : 'Add Member'}
+                </Button>
+              </div>
+            )}
+
+            {/* Edit form */}
+            {editingMember && (
+              <div className="mb-6 p-4 rounded-xl bg-zinc-800 border border-teal-500/30 space-y-3">
+                <p className="text-xs text-teal-400 font-semibold uppercase tracking-wider">Editing: {editingMember.name}</p>
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <Field label="Name *" value={editingMember.name} onChange={v=>setEditingMember(m=>m&&({...m,name:v}))} placeholder="Full name" />
+                  <Field label="Position *" value={editingMember.position} onChange={v=>setEditingMember(m=>m&&({...m,position:v}))} placeholder="e.g. President" />
+                </div>
+                <div className="flex items-center gap-3">
+                  {editingMember.photo
+                    ? <img src={editingMember.photo} alt="preview" className="w-12 h-12 rounded-full object-cover border border-white/20" />
+                    : <div className="w-12 h-12 rounded-full bg-zinc-700 border border-white/10 flex items-center justify-center text-white/30 text-xs">No photo</div>
+                  }
+                  <input ref={el => { memberPhotoRefs.current[editingMember.id] = el; }} type="file" accept="image/*" className="hidden"
+                    onChange={e => handleMemberPhotoChange(e, editingMember.id)} />
+                  <Button size="sm" variant="outline" onClick={() => memberPhotoRefs.current[editingMember.id]?.click()}
+                    disabled={uploadingMemberPhotoId === editingMember.id} className="gap-2 border-white/20 text-white/70 bg-transparent hover:bg-white/10">
+                    {uploadingMemberPhotoId === editingMember.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+                    {uploadingMemberPhotoId === editingMember.id ? 'Uploading...' : 'Change Photo'}
+                  </Button>
+                  {editingMember.photo && (
+                    <Button size="sm" variant="outline" onClick={() => handleRemoveMemberPhoto(editingMember.id)}
+                      className="gap-2 border-red-500/30 text-red-400 bg-transparent hover:bg-red-500/20">
+                      <Trash2 className="w-3.5 h-3.5" /> Remove Photo
+                    </Button>
+                  )}
+                </div>
+                <div className="flex gap-2">
+                  <Button size="sm" onClick={handleSaveMember} disabled={savingMember} className="gap-2 bg-teal-600 hover:bg-teal-500 text-white">
+                    {savingMember ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                    {savingMember ? 'Saving...' : 'Save Changes'}
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={() => setEditingMember(null)} className="border-white/20 text-white/70 bg-transparent hover:bg-white/10">
+                    <X className="w-4 h-4" /> Cancel
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {loadingCommittee
+              ? <div className="flex justify-center py-10"><Loader2 className="w-7 h-7 animate-spin text-white/40" /></div>
+              : committee.length === 0
+              ? <p className="text-center text-white/40 py-10">No committee members yet.</p>
+              : (
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {committee.map((member) => (
+                    <div key={member.id} className="group flex items-center gap-3 p-3 rounded-xl bg-zinc-800 border border-white/10
+                      hover:border-teal-500/40 transition-all duration-200">
+                      {/* avatar */}
+                      <div className="relative shrink-0">
+                        {member.photo
+                          ? <img src={member.photo} alt={member.name} className="w-12 h-12 rounded-full object-cover border-2 border-teal-500/40" />
+                          : <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-500 to-cyan-600 flex items-center justify-center text-white font-bold text-sm">
+                              {member.name.slice(0,2).toUpperCase()}
+                            </div>
+                        }
+                        {/* photo hover actions */}
+                        <div className="absolute inset-0 rounded-full bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity
+                          flex items-center justify-center gap-0.5">
+                          <input ref={el => { memberPhotoRefs.current[member.id] = el; }} type="file" accept="image/*" className="hidden"
+                            onChange={e => handleMemberPhotoChange(e, member.id)} />
+                          <button onClick={() => memberPhotoRefs.current[member.id]?.click()}
+                            disabled={uploadingMemberPhotoId === member.id}
+                            className="w-5 h-5 rounded flex items-center justify-center text-white hover:text-teal-300 transition-colors"
+                            title="Upload photo">
+                            {uploadingMemberPhotoId === member.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
+                          </button>
+                          {member.photo && (
+                            <button onClick={() => handleRemoveMemberPhoto(member.id)}
+                              className="w-5 h-5 rounded flex items-center justify-center text-white hover:text-red-400 transition-colors"
+                              title="Remove photo">
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                      {/* info */}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-white truncate">{member.name}</p>
+                        <p className="text-xs text-teal-400 truncate">{member.position}</p>
+                      </div>
+                      {/* actions */}
+                      <div className="flex gap-1 shrink-0">
+                        <button onClick={() => setEditingMember(member)}
+                          className="w-7 h-7 rounded-lg flex items-center justify-center text-white/30 hover:text-white/70 hover:bg-white/10 transition-colors">
+                          <Pencil className="w-3.5 h-3.5" />
+                        </button>
+                        <button onClick={() => handleDeleteMember(member.id)}
+                          className="w-7 h-7 rounded-lg flex items-center justify-center text-white/30 hover:text-red-400 hover:bg-red-500/20 transition-colors">
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )
+            }
           </CardContent>
         </Card>
 

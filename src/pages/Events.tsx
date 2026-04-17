@@ -36,7 +36,7 @@ const Events = () => {
         <div className="container mx-auto px-4">
           <div className="flex items-center gap-2 mb-8">
             <Calendar className="w-5 h-5 text-secondary" />
-            <h2 className="font-serif text-2xl font-semibold text-foreground">Upcoming Events</h2>
+            <h2 className="font-serif text-2xl font-semibold text-foreground">Events</h2>
           </div>
           {isLoading ? (
             <div className="flex justify-center py-16"><Loader2 className="w-8 h-8 animate-spin text-muted-foreground" /></div>
