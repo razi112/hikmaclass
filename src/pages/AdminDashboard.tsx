@@ -17,6 +17,7 @@ import { addStudent, getRegisteredStudents, type Student } from '@/data/sampleDa
 const IMAGE_BUCKET = 'gallery-images';
 const VIDEO_BUCKET = 'gallery-videos';
 const THUMB_BUCKET = 'gallery-thumbnails';
+const STUDENT_PHOTO_BUCKET = 'student-photos';
 
 type ImageItem = { id: string; name: string; url: string; fileName: string };
 type VideoItem = { id: string; name: string; url: string; fileName: string; thumbnailUrl: string | null };
@@ -25,7 +26,15 @@ type NewsItem  = { id: string; title: string; excerpt: string; date: string; aut
 
 const emptyEvent: Omit<EventItem,'id'> = { title:'', description:'', date:'', time:'', location:'', category:'social', image_url: null };
 const emptyNews:  Omit<NewsItem,'id'>  = { title:'', excerpt:'', date:'', author:'Admin', category:'' };
-const emptyStudent: Omit<Student,'id'> = { name:'', email:'', phone:'', photo:'', classYear:'', graduationYear: new Date().getFullYear(), department:'Hikma Class Union', bio:'' };
+const emptyStudent: Omit<Student,'id'> = { name:'', email:'', phone:'', photo:'', classYear:'', graduationYear: 2026, department:'Hikma Class Union', bio:'' };
+
+const Field = ({ label, value, onChange, placeholder, type='text' }: { label:string; value:string; onChange:(v:string)=>void; placeholder?:string; type?:string }) => (
+  <div>
+    <label className="text-xs text-white/50 mb-1 block">{label}</label>
+    <Input type={type} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder}
+      className="bg-zinc-800 border-white/10 text-white placeholder:text-white/30 h-8 text-sm" />
+  </div>
+);
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -37,6 +46,8 @@ const AdminDashboard = () => {
   const videoInputRef = useRef<HTMLInputElement>(null);
   const thumbInputRef = useRef<HTMLInputElement>(null);
   const eventImageRef = useRef<HTMLInputElement>(null);
+  const newStudentPhotoRef = useRef<HTMLInputElement>(null);
+  const studentPhotoRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   // gallery state
   const [selectedImage, setSelectedImage] = useState<ImageItem | null>(null);
@@ -53,6 +64,9 @@ const AdminDashboard = () => {
   const [newStudent, setNewStudent] = useState<Omit<Student,'id'>>(emptyStudent);
   const [savingStudent, setSavingStudent] = useState(false);
   const [deletingStudentId, setDeletingStudentId] = useState<string|null>(null);
+  const [uploadingNewStudentPhoto, setUploadingNewStudentPhoto] = useState(false);
+  const [uploadingPhotoForId, setUploadingPhotoForId] = useState<string|null>(null);
+  const [editingStudent, setEditingStudent] = useState<Student|null>(null);
 
   // events state
   const [events, setEvents] = useState<EventItem[]>([]);
@@ -123,6 +137,70 @@ const AdminDashboard = () => {
     setDeletingStudentId(null);
     if (error) { toast({ title:'Delete failed', description: error.message, variant:'destructive' }); return; }
     toast({ title:'Student deleted' });
+    fetchStudents();
+  };
+
+  const uploadStudentPhoto = async (file: File): Promise<string | null> => {
+    // Ensure bucket exists (creates it if missing)
+    const { data: buckets } = await supabase.storage.listBuckets();
+    if (!buckets?.find(b => b.id === STUDENT_PHOTO_BUCKET)) {
+      await supabase.storage.createBucket(STUDENT_PHOTO_BUCKET, { public: true });
+    }
+    const fileName = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+    const { error } = await supabase.storage.from(STUDENT_PHOTO_BUCKET).upload(fileName, file, { contentType: file.type, upsert: false });
+    if (error) { toast({ title: 'Photo upload failed', description: error.message, variant: 'destructive' }); return null; }
+    return supabase.storage.from(STUDENT_PHOTO_BUCKET).getPublicUrl(fileName).data.publicUrl;
+  };
+
+  const handleNewStudentPhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]; if (!file) return;
+    if (!file.type.startsWith('image/')) { toast({ title: 'Only image files allowed', variant: 'destructive' }); return; }
+    setUploadingNewStudentPhoto(true);
+    const url = await uploadStudentPhoto(file);
+    setUploadingNewStudentPhoto(false);
+    if (url) setNewStudent(s => ({ ...s, photo: url }));
+    e.target.value = '';
+  };
+
+  const handleStudentPhotoChange = async (e: React.ChangeEvent<HTMLInputElement>, studentId: string) => {
+    const file = e.target.files?.[0]; if (!file) return;
+    if (!file.type.startsWith('image/')) { toast({ title: 'Only image files allowed', variant: 'destructive' }); return; }
+    setUploadingPhotoForId(studentId);
+    const url = await uploadStudentPhoto(file);
+    if (url) {
+      const { error } = await (supabase as any).from('students').update({ photo: url }).eq('id', studentId);
+      if (error) { toast({ title: 'Failed to update photo', description: error.message, variant: 'destructive' }); }
+      else { toast({ title: 'Photo updated' }); fetchStudents(); }
+    }
+    setUploadingPhotoForId(null);
+    e.target.value = '';
+  };
+
+  const handleRemoveStudentPhoto = async (studentId: string) => {
+    const { error } = await (supabase as any).from('students').update({ photo: '' }).eq('id', studentId);
+    if (error) { toast({ title: 'Failed to remove photo', description: error.message, variant: 'destructive' }); return; }
+    toast({ title: 'Photo removed' });
+    fetchStudents();
+  };
+
+  const handleUpdateStudent = async () => {
+    if (!editingStudent) return;
+    if (!editingStudent.name.trim()) { toast({ title: 'Name is required', variant: 'destructive' }); return; }
+    setSavingStudent(true);
+    const { error } = await (supabase as any).from('students').update({
+      name: editingStudent.name,
+      email: editingStudent.email,
+      phone: editingStudent.phone ?? '',
+      class_year: editingStudent.classYear,
+      graduation_year: editingStudent.graduationYear,
+      bio: editingStudent.bio ?? '',
+      photo: editingStudent.photo ?? '',
+      role: editingStudent.role ?? '',
+    }).eq('id', editingStudent.id);
+    setSavingStudent(false);
+    if (error) { toast({ title: 'Update failed', description: error.message, variant: 'destructive' }); return; }
+    toast({ title: 'Student updated' });
+    setEditingStudent(null);
     fetchStudents();
   };
 
@@ -258,7 +336,12 @@ const AdminDashboard = () => {
   });
 
   const deleteVideoMutation = useMutation({
-    mutationFn: async (fileName: string) => { const { error } = await supabase.storage.from(VIDEO_BUCKET).remove([fileName]); if (error) throw error; },
+    mutationFn: async (fileName: string) => {
+      const { error } = await supabase.storage.from(VIDEO_BUCKET).remove([fileName]);
+      if (error) throw error;
+      // also clean up metadata row (ignore error if not found)
+      await supabase.from('video_metadata').delete().eq('file_name', fileName);
+    },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['gallery-videos'] }); toast({ title: 'Video deleted' }); },
     onError: (err: Error) => toast({ title: 'Delete failed', description: err.message, variant: 'destructive' }),
   });
@@ -280,9 +363,18 @@ const AdminDashboard = () => {
       const { error: upErr } = await supabase.storage.from(THUMB_BUCKET).upload(thumbName, file, { contentType: file.type, upsert: true });
       if (upErr) throw upErr;
       const { data } = supabase.storage.from(THUMB_BUCKET).getPublicUrl(thumbName);
+      const thumbUrl = data.publicUrl;
       const existing = videos.find(v => v.fileName === fileName);
-      const { error: metaErr } = await supabase.from('video_metadata').upsert({ file_name: fileName, title: existing?.name ?? fileName.replace(/\.[^.]+$/, '').replace(/_/g, ' '), thumbnail_url: data.publicUrl });
-      if (metaErr) throw metaErr;
+      const title = existing?.name ?? fileName.replace(/\.[^.]+$/, '').replace(/_/g, ' ');
+      // check if row exists first, then insert or update
+      const { data: existingRow } = await supabase.from('video_metadata').select('file_name').eq('file_name', fileName).maybeSingle();
+      if (existingRow) {
+        const { error } = await supabase.from('video_metadata').update({ thumbnail_url: thumbUrl }).eq('file_name', fileName);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from('video_metadata').insert({ file_name: fileName, title, thumbnail_url: thumbUrl });
+        if (error) throw error;
+      }
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['gallery-videos'] }); setThumbTargetFileName(null); toast({ title: 'Thumbnail updated' }); },
     onError: (err: Error) => toast({ title: 'Thumbnail upload failed', description: err.message, variant: 'destructive' }),
@@ -329,13 +421,6 @@ const AdminDashboard = () => {
   ];
 
   // ── shared form field helper ───────────────────────────────────────────────
-  const Field = ({ label, value, onChange, placeholder, type='text' }: { label:string; value:string; onChange:(v:string)=>void; placeholder?:string; type?:string }) => (
-    <div>
-      <label className="text-xs text-white/50 mb-1 block">{label}</label>
-      <Input type={type} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder}
-        className="bg-zinc-800 border-white/10 text-white placeholder:text-white/30 h-8 text-sm" />
-    </div>
-  );
 
   return (
     <div className="min-h-screen bg-zinc-950">
@@ -411,12 +496,59 @@ const AdminDashboard = () => {
                 <Field label="Name *" value={newStudent.name} onChange={v=>setNewStudent(s=>({...s,name:v}))} placeholder="Full name" />
                 <Field label="Email" value={newStudent.email} onChange={v=>setNewStudent(s=>({...s,email:v}))} placeholder="email@example.com" type="email" />
                 <Field label="Phone" value={newStudent.phone??''} onChange={v=>setNewStudent(s=>({...s,phone:v}))} placeholder="+91 ..." />
-                <Field label="Class Year" value={newStudent.classYear} onChange={v=>setNewStudent(s=>({...s,classYear:v}))} placeholder="2024" />
-                <Field label="Graduation Year" value={String(newStudent.graduationYear)} onChange={v=>setNewStudent(s=>({...s,graduationYear:Number(v)}))} type="number" />
+                <Field label="Class Year" value={newStudent.classYear} onChange={v=>setNewStudent(s=>({...s,classYear:v}))} placeholder="2026" />
                 <Field label="Bio" value={newStudent.bio??''} onChange={v=>setNewStudent(s=>({...s,bio:v}))} placeholder="Short bio..." />
+                <Field label="Role (badge)" value={newStudent.role??''} onChange={v=>setNewStudent(s=>({...s,role:v}))} placeholder="Secretary / President ..." />
+                {/* Photo upload */}
+                <div className="sm:col-span-2 lg:col-span-3">
+                  <label className="text-xs text-white/50 mb-1 block">Profile Photo</label>
+                  <div className="flex items-center gap-3">
+                    {newStudent.photo ? (
+                      <img src={newStudent.photo} alt="Preview" className="w-12 h-12 rounded-full object-cover border border-white/20 shrink-0" />
+                    ) : (
+                      <div className="w-12 h-12 rounded-full bg-violet-500/20 flex items-center justify-center shrink-0 text-violet-300 font-bold text-lg">
+                        {newStudent.name ? newStudent.name.charAt(0).toUpperCase() : '?'}
+                      </div>
+                    )}
+                    <input ref={newStudentPhotoRef} type="file" accept="image/*" className="hidden" onChange={handleNewStudentPhotoChange} />
+                    <Button type="button" size="sm" variant="outline" onClick={() => newStudentPhotoRef.current?.click()}
+                      disabled={uploadingNewStudentPhoto}
+                      className="gap-2 border-white/20 text-white/70 bg-transparent hover:bg-white/10">
+                      {uploadingNewStudentPhoto ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+                      {uploadingNewStudentPhoto ? 'Uploading...' : newStudent.photo ? 'Change Photo' : 'Upload Photo'}
+                    </Button>
+                    {newStudent.photo && (
+                      <button type="button" onClick={() => setNewStudent(s => ({ ...s, photo: '' }))}
+                        className="w-7 h-7 rounded-lg flex items-center justify-center text-white/30 hover:text-red-400 hover:bg-red-500/20 transition-colors">
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                </div>
                 <div className="sm:col-span-2 lg:col-span-3 flex justify-end">
                   <Button size="sm" onClick={handleAddStudent} disabled={savingStudent} className="gap-2 bg-violet-600 hover:bg-violet-500 text-white">
                     {savingStudent ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Save Student
+                  </Button>
+                </div>
+              </div>
+            )}
+            {/* Edit form */}
+            {editingStudent && (
+              <div className="mb-6 p-4 rounded-xl bg-zinc-800 border border-violet-500/30 grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                <div className="sm:col-span-2 lg:col-span-3 flex items-center gap-2 mb-1">
+                  <Pencil className="w-4 h-4 text-violet-400" />
+                  <span className="text-sm font-medium text-violet-300">Editing: {editingStudent.name}</span>
+                </div>
+                <Field label="Name *" value={editingStudent.name} onChange={v=>setEditingStudent(s=>s&&({...s,name:v}))} placeholder="Full name" />
+                <Field label="Email" value={editingStudent.email} onChange={v=>setEditingStudent(s=>s&&({...s,email:v}))} placeholder="email@example.com" type="email" />
+                <Field label="Phone" value={editingStudent.phone??''} onChange={v=>setEditingStudent(s=>s&&({...s,phone:v}))} placeholder="+91 ..." />
+                <Field label="Class Year" value={editingStudent.classYear} onChange={v=>setEditingStudent(s=>s&&({...s,classYear:v}))} placeholder="2026" />
+                <Field label="Bio" value={editingStudent.bio??''} onChange={v=>setEditingStudent(s=>s&&({...s,bio:v}))} placeholder="Short bio..." />
+                <Field label="Role (badge)" value={editingStudent.role??''} onChange={v=>setEditingStudent(s=>s&&({...s,role:v}))} placeholder="Secretary / President ..." />
+                <div className="sm:col-span-2 lg:col-span-3 flex justify-end gap-2">
+                  <Button size="sm" variant="ghost" onClick={() => setEditingStudent(null)} className="text-white/50 hover:text-white">Cancel</Button>
+                  <Button size="sm" onClick={handleUpdateStudent} disabled={savingStudent} className="gap-2 bg-violet-600 hover:bg-violet-500 text-white">
+                    {savingStudent ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Update Student
                   </Button>
                 </div>
               </div>
@@ -429,13 +561,54 @@ const AdminDashboard = () => {
               <div className="space-y-2">
                 {students.map(s => (
                   <div key={s.id} className="flex items-center gap-3 px-4 py-3 rounded-xl bg-zinc-800 border border-white/5 hover:border-white/10 transition-colors">
-                    <div className="w-9 h-9 rounded-full bg-violet-500/20 flex items-center justify-center shrink-0 text-sm font-bold text-violet-300">
-                      {s.name.charAt(0).toUpperCase()}
+                    <div className="relative group/photo shrink-0">
+                      {s.photo ? (
+                        <img src={s.photo} alt={s.name} className="w-9 h-9 rounded-full object-cover border border-white/20" />
+                      ) : (
+                        <div className="w-9 h-9 rounded-full bg-violet-500/20 flex items-center justify-center text-sm font-bold text-violet-300">
+                          {s.name.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      {/* hover overlay for photo actions */}
+                      <div className="absolute inset-0 rounded-full bg-black/60 opacity-0 group-hover/photo:opacity-100 transition-opacity flex items-center justify-center">
+                        <button
+                          onClick={() => studentPhotoRefs.current[s.id]?.click()}
+                          disabled={uploadingPhotoForId === s.id}
+                          className="text-white"
+                          aria-label="Upload photo"
+                          title="Upload photo"
+                        >
+                          {uploadingPhotoForId === s.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+                        </button>
+                      </div>
+                      <input
+                        type="file" accept="image/*" className="hidden"
+                        ref={el => { studentPhotoRefs.current[s.id] = el; }}
+                        onChange={e => handleStudentPhotoChange(e, s.id)}
+                      />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-white truncate">{s.name}</p>
                       <p className="text-xs text-white/40 truncate">{s.email} {s.classYear ? `· ${s.classYear}` : ''}</p>
                     </div>
+                    {s.photo && (
+                      <button
+                        onClick={() => handleRemoveStudentPhoto(s.id)}
+                        className="w-7 h-7 rounded-lg flex items-center justify-center text-white/30 hover:text-orange-400 hover:bg-orange-500/20 transition-colors shrink-0"
+                        aria-label="Remove photo"
+                        title="Remove photo"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                    <button
+                      onClick={() => { setEditingStudent(s); setShowAddStudent(false); }}
+                      className="w-7 h-7 rounded-lg flex items-center justify-center text-white/30 hover:text-violet-400 hover:bg-violet-500/20 transition-colors shrink-0"
+                      aria-label="Edit student"
+                      title="Edit student"
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                    </button>
                     <button
                       onClick={() => handleDeleteStudent(s.id)}
                       disabled={deletingStudentId === s.id}
@@ -711,10 +884,6 @@ const AdminDashboard = () => {
                         {uploadThumbMutation.isPending && thumbTargetFileName===video.fileName ? <Loader2 className="w-3 h-3 animate-spin" /> : <ImageIcon className="w-3 h-3" />}
                         Thumbnail
                       </button>
-                      <button onClick={()=>deleteVideoMutation.mutate(video.fileName)} disabled={deleteVideoMutation.isPending}
-                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity w-7 h-7 rounded-full bg-black/60 hover:bg-red-600 flex items-center justify-center">
-                        {deleteVideoMutation.isPending ? <Loader2 className="w-3.5 h-3.5 text-white animate-spin" /> : <Trash2 className="w-3.5 h-3.5 text-white" />}
-                      </button>
                     </div>
                     <div className="px-3 py-2.5 bg-zinc-800">
                       {editingVideoId === video.fileName ? (
@@ -736,6 +905,12 @@ const AdminDashboard = () => {
                           <button onClick={()=>{setEditingVideoId(video.fileName);setEditVideoTitle(video.name);}}
                             className="w-6 h-6 rounded flex items-center justify-center text-white/30 hover:text-white/70 hover:bg-white/10 transition-colors shrink-0">
                             <Pencil className="w-3 h-3" />
+                          </button>
+                          <button onClick={()=>deleteVideoMutation.mutate(video.fileName)}
+                            disabled={deleteVideoMutation.isPending}
+                            className="w-6 h-6 rounded flex items-center justify-center text-white/30 hover:text-red-400 hover:bg-red-500/20 transition-colors shrink-0"
+                            aria-label="Delete video">
+                            {deleteVideoMutation.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />}
                           </button>
                         </div>
                       )}

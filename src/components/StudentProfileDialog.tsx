@@ -132,11 +132,6 @@ export function StudentProfileDialog({
                 label="Blood Group"
                 value={student.bloodGroup}
               />
-              <InfoRow
-                icon={Calendar}
-                label="Graduation Year"
-                value={student.graduationYear.toString()}
-              />
             </div>
           </div>
 

@@ -5,12 +5,11 @@ import { StudentCard } from '@/components/cards/StudentCard';
 import { StudentProfileDialog } from '@/components/StudentProfileDialog';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { departments, graduationYears, Student, getRegisteredStudents } from '@/data/sampleData';
+import { departments, Student, getRegisteredStudents } from '@/data/sampleData';
 
 const Students = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDepartment, setSelectedDepartment] = useState('All Departments');
-  const [selectedYear, setSelectedYear] = useState('All Years');
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [students, setStudents] = useState<Student[]>([]);
@@ -30,12 +29,11 @@ const Students = () => {
         student.department.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesDepartment = selectedDepartment === 'All Departments' || 
         student.department === selectedDepartment;
-      const matchesYear = selectedYear === 'All Years' || 
-        student.graduationYear.toString() === selectedYear;
+      const matchesYear = true;
       
       return matchesSearch && matchesDepartment && matchesYear;
     });
-  }, [searchTerm, selectedDepartment, selectedYear, students]);
+  }, [searchTerm, selectedDepartment, students]);
 
   const handleStudentClick = (student: Student) => {
     setSelectedStudent(student);
@@ -79,19 +77,6 @@ const Students = () => {
                 {departments.map((dept) => (
                   <SelectItem key={dept} value={dept}>
                     {dept}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            
-            <Select value={selectedYear} onValueChange={setSelectedYear}>
-              <SelectTrigger className="w-full md:w-[150px]">
-                <SelectValue placeholder="Year" />
-              </SelectTrigger>
-              <SelectContent>
-                {graduationYears.map((year) => (
-                  <SelectItem key={year} value={year}>
-                    {year}
                   </SelectItem>
                 ))}
               </SelectContent>

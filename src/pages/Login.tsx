@@ -70,8 +70,8 @@ const Login = () => {
       rollNumber,
       parentName,
       photo: photoUrl,
-      classYear: 'Class of 2024',
-      graduationYear: 2024,
+      classYear: 'Class of 2026',
+      graduationYear: 2026,
       department: 'Hikma Class Union',
       address: 'Kerala, India',
     };
