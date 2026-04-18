@@ -80,14 +80,14 @@ export const StudentCard = ({ student, onClick }: StudentCardProps) => {
         {/* info */}
         <div className="p-5">
           <h3 className="font-serif text-lg font-semibold text-foreground mb-0.5
-            group-hover:text-primary transition-colors duration-300">
+            group-hover:text-primary transition-colors duration-500">
             {student.name}
           </h3>
           <p className="text-sm text-secondary font-medium mb-1">{student.department}</p>
 
           {student.bio && (
             <p className="text-sm text-muted-foreground line-clamp-2 mb-4
-              group-hover:text-foreground transition-colors duration-300">
+              group-hover:text-foreground transition-colors duration-500">
               {student.bio}
             </p>
           )}
@@ -95,12 +95,12 @@ export const StudentCard = ({ student, onClick }: StudentCardProps) => {
           <div className="flex items-center justify-between pt-3 border-t border-border">
             <div className="flex items-center gap-1">
               <a href={`mailto:${student.email}`} onClick={e => e.stopPropagation()}
-                className="p-2 rounded-lg hover:bg-muted transition-all duration-300 hover:scale-110" title="Email">
+                className="p-2 rounded-lg hover:bg-muted transition-all duration-500 hover:scale-110" title="Email">
                 <Mail className="w-4 h-4 text-muted-foreground hover:text-primary transition-colors" />
               </a>
               {student.phone && (
                 <a href={`tel:${student.phone}`} onClick={e => e.stopPropagation()}
-                  className="p-2 rounded-lg hover:bg-muted transition-all duration-300 hover:scale-110" title="Phone">
+                  className="p-2 rounded-lg hover:bg-muted transition-all duration-500 hover:scale-110" title="Phone">
                   <Phone className="w-4 h-4 text-muted-foreground hover:text-primary transition-colors" />
                 </a>
               )}
@@ -109,19 +109,19 @@ export const StudentCard = ({ student, onClick }: StudentCardProps) => {
               <div className="flex items-center gap-1">
                 {student.socialLinks.linkedin && (
                   <a href={student.socialLinks.linkedin} onClick={e => e.stopPropagation()}
-                    className="p-2 rounded-lg hover:bg-muted transition-all duration-300 hover:scale-110">
+                    className="p-2 rounded-lg hover:bg-muted transition-all duration-500 hover:scale-110">
                     <Linkedin className="w-4 h-4 text-muted-foreground hover:text-primary transition-colors" />
                   </a>
                 )}
                 {student.socialLinks.twitter && (
                   <a href={student.socialLinks.twitter} onClick={e => e.stopPropagation()}
-                    className="p-2 rounded-lg hover:bg-muted transition-all duration-300 hover:scale-110">
+                    className="p-2 rounded-lg hover:bg-muted transition-all duration-500 hover:scale-110">
                     <Twitter className="w-4 h-4 text-muted-foreground hover:text-primary transition-colors" />
                   </a>
                 )}
                 {student.socialLinks.facebook && (
                   <a href={student.socialLinks.facebook} onClick={e => e.stopPropagation()}
-                    className="p-2 rounded-lg hover:bg-muted transition-all duration-300 hover:scale-110">
+                    className="p-2 rounded-lg hover:bg-muted transition-all duration-500 hover:scale-110">
                     <Facebook className="w-4 h-4 text-muted-foreground hover:text-primary transition-colors" />
                   </a>
                 )}

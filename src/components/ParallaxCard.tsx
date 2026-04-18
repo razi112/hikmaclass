@@ -45,7 +45,7 @@ export function ParallaxCard({ children, className, intensity = 15 }: ParallaxCa
   return (
     <div
       ref={cardRef}
-      className={cn('transition-transform duration-300 ease-out', className)}
+      className={cn('transition-transform duration-500 ease-out', className)}
       style={{
         transform: `perspective(1000px) rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
       }}

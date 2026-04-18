@@ -55,7 +55,7 @@ const Students = () => {
       </section>
 
       {/* Filters */}
-      <section className="py-8 bg-muted/50 border-b border-border">
+      <section className="py-8 bg-muted/50 border-b border-border sticky top-16 md:top-20 z-40 backdrop-blur-sm">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">

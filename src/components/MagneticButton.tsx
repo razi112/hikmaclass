@@ -44,7 +44,7 @@ export function MagneticButton({
     <button
       ref={buttonRef}
       className={cn(
-        'relative transition-all duration-300 ease-out',
+        'relative transition-all duration-500 ease-out',
         'hover:scale-105 active:scale-95',
         className
       )}

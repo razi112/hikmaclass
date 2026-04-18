@@ -50,12 +50,12 @@ const Wings = () => (
                 <div className="flex items-center gap-3 mb-4">
                   <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${wing.color}
                     flex items-center justify-center shadow-lg
-                    transition-transform duration-300 group-hover:scale-110`}>
+                    transition-transform duration-500 group-hover:scale-110`}>
                     <wing.icon className="w-5 h-5 text-white" />
                   </div>
                   <div>
                     <h3 className="font-serif text-xl font-bold text-foreground
-                      group-hover:text-white transition-colors duration-300">
+                      group-hover:text-white transition-colors duration-500">
                       {wing.name}
                     </h3>
                     <p className="text-xs text-muted-foreground">{wing.plans.length} Plans · 2 Members</p>
@@ -68,7 +68,7 @@ const Wings = () => (
 
                 {/* divider */}
                 <div className={`h-px w-full bg-gradient-to-r ${wing.color} opacity-20
-                  group-hover:opacity-50 transition-opacity duration-300 mb-4`} />
+                  group-hover:opacity-50 transition-opacity duration-500 mb-4`} />
 
                 {/* members */}
                 <div className="flex items-center gap-2 mb-5">

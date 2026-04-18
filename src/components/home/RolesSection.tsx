@@ -110,7 +110,7 @@ const RoleCard = ({ role, index }: { role: Role; index: number }) => {
       >
         {/* holographic shine layer */}
         <div
-          className="absolute inset-0 pointer-events-none z-10 rounded-2xl transition-opacity duration-300"
+          className="absolute inset-0 pointer-events-none z-10 rounded-2xl transition-opacity duration-500"
           style={{
             opacity: hovered ? 1 : 0,
             background: `radial-gradient(circle 180px at ${shine.x}% ${shine.y}%, rgba(255,255,255,0.12) 0%, transparent 60%),
@@ -134,13 +134,13 @@ const RoleCard = ({ role, index }: { role: Role; index: number }) => {
           <div className="text-center mb-6">
             <div
               className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-3
-                transition-all duration-400 ${hovered ? role.iconBg : 'bg-primary/10'}`}
+                transition-all duration-500 ${hovered ? role.iconBg : 'bg-primary/10'}`}
               style={{
                 transform: hovered ? 'scale(1.1)' : 'scale(1)',
                 transition: 'transform 0.3s ease',
               }}
             >
-              <role.icon className={`w-8 h-8 transition-colors duration-300
+              <role.icon className={`w-8 h-8 transition-colors duration-500
                 ${hovered ? role.iconColor : 'text-primary'}`} />
             </div>
             <div className="text-3xl mb-1">{role.emoji}</div>
@@ -158,7 +158,7 @@ const RoleCard = ({ role, index }: { role: Role; index: number }) => {
             {role.features.map((f, i) => (
               <li
                 key={f.label}
-                className="flex items-center gap-3 text-sm rounded-lg px-2 py-1.5 transition-all duration-300"
+                className="flex items-center gap-3 text-sm rounded-lg px-2 py-1.5 transition-all duration-500"
                 style={{
                   background: hovered ? `rgba(${role.glow},0.06)` : 'transparent',
                   transform: hovered ? 'translateX(4px)' : 'translateX(0)',
@@ -167,8 +167,8 @@ const RoleCard = ({ role, index }: { role: Role; index: number }) => {
                 }}
               >
                 <div className={`w-7 h-7 rounded-md flex items-center justify-center shrink-0
-                  transition-all duration-300 ${hovered ? role.iconBg : 'bg-primary/10'}`}>
-                  <f.icon className={`w-3.5 h-3.5 transition-colors duration-300
+                  transition-all duration-500 ${hovered ? role.iconBg : 'bg-primary/10'}`}>
+                  <f.icon className={`w-3.5 h-3.5 transition-colors duration-500
                     ${hovered ? role.iconColor : 'text-primary'}`} />
                 </div>
                 <span className="font-medium">{f.label}</span>

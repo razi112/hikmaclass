@@ -15,49 +15,49 @@ const navLinks = [
 
 const wingsLinks = [
   { name: 'English',   path: '/wings/english' },
-    { name: 'Media',     path: '/wings/media' },
-    { name: 'Malayalam', path: '/wings/malayalam' },
-    { name: 'Urdu',      path: '/wings/urdu' },
-    { name: 'Magazine',  path: '/wings/magazine' },
-    { name: 'Tharbiya',  path: '/wings/tharbiya' },
-    { name: 'Arabic',    path: '/wings/arabic' },
-  ];
+  { name: 'Media',     path: '/wings/media' },
+  { name: 'Malayalam', path: '/wings/malayalam' },
+  { name: 'Urdu',      path: '/wings/urdu' },
+  { name: 'Magazine',  path: '/wings/magazine' },
+  { name: 'Tharbiya',  path: '/wings/tharbiya' },
+  { name: 'Arabic',    path: '/wings/arabic' },
+];
 
-  export const Navbar = () => {
-    const [isOpen, setIsOpen] = useState(false);
-    const [scrolled, setScrolled] = useState(false);
-    const [wingsOpen, setWingsOpen] = useState(false);
-    const wingsRef = useRef<HTMLDivElement>(null);
-    const location = useLocation();
+export const Navbar = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [wingsOpen, setWingsOpen] = useState(false);
+  const wingsRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
 
-    useEffect(() => {
-      const onScroll = () => setScrolled(window.scrollY > 30);
-      window.addEventListener('scroll', onScroll, { passive: true });
-      return () => window.removeEventListener('scroll', onScroll);
-    }, []);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 30);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
-    useEffect(() => { setIsOpen(false); setWingsOpen(false); }, [location.pathname]);
+  useEffect(() => { setIsOpen(false); setWingsOpen(false); }, [location.pathname]);
 
-    // close wings dropdown on outside click
-    useEffect(() => {
-      const handler = (e: MouseEvent) => {
-        if (wingsRef.current && !wingsRef.current.contains(e.target as Node)) setWingsOpen(false);
-      };
-      document.addEventListener('mousedown', handler);
-      return () => document.removeEventListener('mousedown', handler);
-    }, []);
+  // close wings dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (wingsRef.current && !wingsRef.current.contains(e.target as Node)) setWingsOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
-    return (
-      <>
-      <div className="navbar-wrapper fixed top-0 left-0 right-0 z-50 flex justify-center px-4 pt-4" style={{ transform: "none", transition: "none" }}>
-          <nav
-            className={cn(
-              'w-full max-w-5xl flex items-center justify-between px-4 py-2.5 rounded-2xl transition-all duration-700 ease-in-out',
-              scrolled
-                ? 'bg-black/80 backdrop-blur-2xl border border-white/10'
-                : 'bg-black/60 backdrop-blur-xl border border-white/8'
-            )}
-          >
+  return (
+    <>
+      <div className="sticky top-0 left-0 right-0 z-50 flex justify-center px-4 pt-4">
+        <nav
+          className={cn(
+            'w-full max-w-5xl flex items-center justify-between px-4 py-2.5 rounded-2xl transition-all duration-700 ease-in-out',
+            scrolled
+              ? 'bg-black/80 backdrop-blur-2xl border border-white/10'
+              : 'bg-black/60 backdrop-blur-xl border border-white/8'
+          )}
+        >
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 group shrink-0">
             <div className="relative w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-violet-800 flex items-center justify-center

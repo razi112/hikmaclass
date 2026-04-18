@@ -558,7 +558,7 @@ const AdminDashboard = () => {
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {stats.map((stat, i) => (
             <motion.div key={i} initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} transition={{ delay: i*0.08 }}>
-              <Card className="border-white/10 bg-zinc-900 hover:scale-105 transition-all duration-300">
+              <Card className="border-white/10 bg-zinc-900 hover:scale-105 transition-all duration-500">
                 <CardContent className="p-5">
                   <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${stat.color}`}>
                     <stat.icon className="w-6 h-6" />
@@ -904,7 +904,7 @@ const AdminDashboard = () => {
                   <motion.div key={image.id} initial={{ opacity:0, scale:0.9 }} animate={{ opacity:1, scale:1 }} transition={{ delay: idx*0.04 }}
                     className="group rounded-xl overflow-hidden border border-white/10 bg-zinc-800">
                     <div className="aspect-square relative overflow-hidden cursor-pointer" onClick={() => setSelectedImage(image)}>
-                      <img src={image.url} alt={image.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      <img src={image.url} alt={image.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
                     </div>
                     <div className="px-3 py-2 bg-zinc-800">
@@ -1039,7 +1039,7 @@ const AdminDashboard = () => {
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {committee.map((member) => (
                     <div key={member.id} className="group flex items-center gap-3 p-3 rounded-xl bg-zinc-800 border border-white/10
-                      hover:border-teal-500/40 transition-all duration-200">
+                      hover:border-teal-500/40 transition-all duration-500">
                       {/* avatar */}
                       <div className="relative shrink-0">
                         {member.photo
@@ -1120,8 +1120,8 @@ const AdminDashboard = () => {
                     className="group rounded-xl overflow-hidden border border-white/10 bg-zinc-800">
                     <div className="aspect-video bg-zinc-900 relative overflow-hidden">
                       {video.thumbnailUrl
-                        ? <img src={video.thumbnailUrl} alt={video.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                        : <video src={video.url} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" preload="metadata" />}
+                        ? <img src={video.thumbnailUrl} alt={video.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                        : <video src={video.url} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" preload="metadata" />}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                       <button onClick={()=>{setThumbTargetFileName(video.fileName);thumbInputRef.current?.click();}}
                         disabled={uploadThumbMutation.isPending && thumbTargetFileName===video.fileName}

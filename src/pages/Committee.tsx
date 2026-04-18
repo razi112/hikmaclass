@@ -99,14 +99,14 @@ const Committee = () => {
                       </div>
 
                       <h3 className="font-serif text-xl font-bold text-foreground mb-2
-                        group-hover:text-white transition-colors duration-300">
+                        group-hover:text-white transition-colors duration-500">
                         {member.name}
                       </h3>
 
                       <span className={`inline-block px-4 py-1 rounded-full text-xs font-semibold
                         text-white bg-gradient-to-r ${grad}
                         opacity-75 group-hover:opacity-100 group-hover:scale-105
-                        transition-all duration-300`}>
+                        transition-all duration-500`}>
                         {member.position}
                       </span>
                     </div>

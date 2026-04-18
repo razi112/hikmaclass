@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
@@ -17,6 +18,13 @@ export const GallerySection = () => {
   const [selectedImage, setSelectedImage] = useState<GalleryItem | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<GalleryItem | null>(null);
   const [tab, setTab] = useState<'photos' | 'videos'>('photos');
+
+  // Lock body scroll when any modal is open
+  useEffect(() => {
+    const isOpen = !!selectedImage || !!selectedVideo;
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [selectedImage, selectedVideo]);
 
   const { data: images = [], isLoading: loadingImages } = useQuery<GalleryItem[]>({
     queryKey: ['gallery-images'],
@@ -135,7 +143,7 @@ export const GallerySection = () => {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: idx * 0.05 }}
-                  className="group relative rounded-2xl overflow-hidden bg-muted cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300"
+                  className="group relative rounded-2xl overflow-hidden bg-muted cursor-pointer shadow-sm hover:shadow-xl transition-all duration-500"
                   onClick={() => item.type === 'image' ? setSelectedImage(item) : setSelectedVideo(item)}
                 >
                   {item.type === 'image' ? (
@@ -146,8 +154,8 @@ export const GallerySection = () => {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                       {/* Hover overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      <div className="absolute bottom-0 left-0 right-0 px-3 py-3 translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      <div className="absolute bottom-0 left-0 right-0 px-3 py-3 translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
                         <p className="text-white text-sm font-semibold capitalize truncate drop-shadow-lg">
                           {item.name}
                         </p>
@@ -178,87 +186,78 @@ export const GallerySection = () => {
       </div>
 
       {/* Image Lightbox */}
-      <AnimatePresence>
-        {selectedImage && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-            onClick={() => setSelectedImage(null)}
-          >
-            <div className="absolute inset-0 bg-black/75 backdrop-blur-md" />
+      {createPortal(
+        <AnimatePresence>
+          {selectedImage && (
             <motion.div
-              initial={{ scale: 0.92, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.92, opacity: 0, y: 20 }}
-              transition={{ type: 'spring', damping: 22, stiffness: 280 }}
-              className="relative z-10 w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+              onClick={() => setSelectedImage(null)}
             >
-              {/* Image with overlay close button */}
-              <div className="relative w-full" style={{ height: '380px' }}>
-                <img
-                  src={selectedImage.url}
-                  alt={selectedImage.name}
-                  className="w-full h-full object-cover rounded-t-3xl"
-                />
-                <button
-                  onClick={() => setSelectedImage(null)}
-                  className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/90 hover:bg-white flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110"
-                  aria-label="Close"
-                >
-                  <X className="w-4 h-4 text-gray-800" />
-                </button>
-              </div>
-
-              {/* Info panel */}
-              <div className="bg-zinc-900 px-6 py-5 rounded-b-3xl">
-                {/* Badges */}
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-600 text-white">
-                    <ImageIcon className="w-3 h-3" />
-                    Photo
-                  </span>
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border border-white/20 text-white/60">
-                    Gallery
-                  </span>
+              <div className="absolute inset-0 bg-black/75 backdrop-blur-md" />
+              <motion.div
+                initial={{ scale: 0.92, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.92, opacity: 0, y: 20 }}
+                transition={{ type: 'spring', damping: 22, stiffness: 280 }}
+                className="relative z-10 w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Image with overlay close button */}
+                <div className="relative w-full" style={{ height: '380px' }}>
+                  <img
+                    src={selectedImage.url}
+                    alt={selectedImage.name}
+                    className="w-full h-full object-cover rounded-t-3xl"
+                  />
+                  <button
+                    onClick={() => setSelectedImage(null)}
+                    className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/90 hover:bg-white flex items-center justify-center shadow-lg transition-all duration-500 hover:scale-110"
+                    aria-label="Close"
+                  >
+                    <X className="w-4 h-4 text-gray-800" />
+                  </button>
                 </div>
 
-                {/* Title */}
-                <h3 className="text-xl font-bold text-white capitalize mb-1">
-                  {selectedImage.name}
-                </h3>
-
-                {/* Description */}
-                <p className="text-sm text-white/50 mb-4">
-                  Hikma Class Union — Gallery
-                </p>
-
-                {/* Footer row */}
-                <div className="flex items-center justify-between flex-wrap gap-2">
-                  <div className="flex items-center gap-1.5 text-xs text-white/40">
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" strokeWidth="2"/>
-                      <line x1="16" y1="2" x2="16" y2="6" strokeWidth="2"/>
-                      <line x1="8" y1="2" x2="8" y2="6" strokeWidth="2"/>
-                      <line x1="3" y1="10" x2="21" y2="10" strokeWidth="2"/>
-                    </svg>
-                    {new Date().toLocaleDateString('en-GB').replace(/\//g, '/')}
+                {/* Info panel */}
+                <div className="bg-zinc-900 px-6 py-5 rounded-b-3xl">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-600 text-white">
+                      <ImageIcon className="w-3 h-3" />
+                      Photo
+                    </span>
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border border-white/20 text-white/60">
+                      Gallery
+                    </span>
                   </div>
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    {['#hikma', '#gallery', '#memories'].map((tag) => (
-                      <span key={tag} className="text-xs px-2 py-0.5 rounded-full border border-white/20 text-white/50">
-                        {tag}
-                      </span>
-                    ))}
+                  <h3 className="text-xl font-bold text-white capitalize mb-1">{selectedImage.name}</h3>
+                  <p className="text-sm text-white/50 mb-4">Hikma Class Union — Gallery</p>
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <div className="flex items-center gap-1.5 text-xs text-white/40">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" strokeWidth="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6" strokeWidth="2"/>
+                        <line x1="8" y1="2" x2="8" y2="6" strokeWidth="2"/>
+                        <line x1="3" y1="10" x2="21" y2="10" strokeWidth="2"/>
+                      </svg>
+                      {new Date().toLocaleDateString('en-GB').replace(/\//g, '/')}
+                    </div>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      {['#hikma', '#gallery', '#memories'].map((tag) => (
+                        <span key={tag} className="text-xs px-2 py-0.5 rounded-full border border-white/20 text-white/50">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>
+      , document.body)}
 
       {/* Video Modal */}
       <Dialog open={!!selectedVideo} onOpenChange={(open) => !open && setSelectedVideo(null)}>

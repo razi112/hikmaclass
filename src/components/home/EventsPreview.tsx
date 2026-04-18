@@ -29,7 +29,7 @@ export const EventsPreview = () => {
               <p className="text-muted-foreground">Don't miss out on these exciting opportunities to connect</p>
             </div>
             <Link to="/events" className="mt-4 md:mt-0">
-              <Button variant="outline" className="gap-2 transition-transform duration-200 hover:scale-105 active:scale-95">
+              <Button variant="outline" className="gap-2 transition-transform duration-500 hover:scale-105 active:scale-95">
                 View All Events <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>

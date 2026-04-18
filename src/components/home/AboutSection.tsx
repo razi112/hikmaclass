@@ -66,7 +66,7 @@ const ValueCard = ({ value, index }: { value: typeof values[0]; index: number })
           transition-transform duration-500 ${hovered ? 'scale-[0.995]' : 'scale-100'}`}>
 
           {/* shimmer sweep */}
-          <div className={`absolute inset-0 pointer-events-none transition-opacity duration-300
+          <div className={`absolute inset-0 pointer-events-none transition-opacity duration-500
             ${hovered ? 'opacity-100' : 'opacity-0'}`}>
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/6 to-transparent
               animate-[shimmerSweep_1.6s_ease-in-out_infinite]" />
@@ -86,7 +86,7 @@ const ValueCard = ({ value, index }: { value: typeof values[0]; index: number })
           <h3 className="font-serif text-xl font-semibold text-foreground mb-2">
             {value.title}
           </h3>
-          <p className={`text-sm leading-relaxed transition-colors duration-300
+          <p className={`text-sm leading-relaxed transition-colors duration-500
             ${hovered ? 'text-foreground/80' : 'text-muted-foreground'}`}>
             {value.description}
           </p>

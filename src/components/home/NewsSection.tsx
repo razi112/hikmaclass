@@ -29,7 +29,7 @@ export const NewsSection = () => {
               <p className="text-muted-foreground">Stay updated with the latest from our community</p>
             </div>
             <Link to="/news" className="mt-4 md:mt-0">
-              <Button variant="outline" className="gap-2 transition-transform duration-200 hover:scale-105 active:scale-95">
+              <Button variant="outline" className="gap-2 transition-transform duration-500 hover:scale-105 active:scale-95">
                 View All News <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>

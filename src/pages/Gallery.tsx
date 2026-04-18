@@ -1,4 +1,5 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Layout } from '@/components/layout/Layout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -50,6 +51,13 @@ const Gallery = () => {
   const [selectedVideo, setSelectedVideo] = useState<VideoItem | null>(null);
   const [selectedImage, setSelectedImage] = useState<ImageItem | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
+
+  // Lock body scroll when any modal is open
+  useEffect(() => {
+    const isOpen = !!selectedImage || !!selectedVideo;
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [selectedImage, selectedVideo]);
   const [editTitle, setEditTitle] = useState('');
   const [thumbTargetFileName, setThumbTargetFileName] = useState<string | null>(null);
 
@@ -316,7 +324,7 @@ const Gallery = () => {
               ) : (
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {images.map((image) => (
-                    <Card key={image.id} className="group overflow-hidden hover:shadow-elevated transition-all duration-300 cursor-pointer" onClick={() => setSelectedImage(image)}>
+                    <Card key={image.id} className="group overflow-hidden hover:shadow-elevated transition-all duration-500 cursor-pointer" onClick={() => setSelectedImage(image)}>
                       <CardContent className="p-0">
                         <div className="relative aspect-[4/3] overflow-hidden">
                           <img
@@ -325,8 +333,8 @@ const Gallery = () => {
                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                           />
                           {/* Hover overlay */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                          <div className="absolute bottom-0 left-0 right-0 px-3 py-3 translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                          <div className="absolute bottom-0 left-0 right-0 px-3 py-3 translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
                             <p className="text-white text-sm font-semibold capitalize truncate drop-shadow-lg">
                               {image.title}
                             </p>
@@ -336,7 +344,7 @@ const Gallery = () => {
                               onClick={(e) => { e.stopPropagation(); deleteImageMutation.mutate(image.fileName); }}
                               disabled={deleteImageMutation.isPending}
                               className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 flex items-center justify-center
-                                hover:bg-red-600 transition-colors duration-200 opacity-0 group-hover:opacity-100"
+                                hover:bg-red-600 transition-colors duration-500 opacity-0 group-hover:opacity-100"
                               aria-label="Delete image"
                             >
                               <X className="w-3.5 h-3.5 text-white" />
@@ -365,7 +373,7 @@ const Gallery = () => {
               ) : (
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {videos.map((video) => (
-                    <Card key={video.id} className="group overflow-hidden hover:shadow-elevated transition-all duration-300">
+                    <Card key={video.id} className="group overflow-hidden hover:shadow-elevated transition-all duration-500">
                       <CardContent className="p-0">
                         <div className="relative aspect-video bg-black overflow-hidden">
                           {video.thumbnailUrl ? (
@@ -379,13 +387,13 @@ const Gallery = () => {
                             className="absolute inset-0 flex items-center justify-center"
                             aria-label={`Play ${video.name}`}
                           >
-                            <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur flex items-center justify-center hover:bg-white/30 transition-colors duration-200">
+                            <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur flex items-center justify-center hover:bg-white/30 transition-colors duration-500">
                               <Play className="w-6 h-6 text-white fill-white ml-1" />
                             </div>
                           </button>
 
                           {isAdmin && (
-                            <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                            <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
@@ -393,7 +401,7 @@ const Gallery = () => {
                                   thumbInputRef.current?.click();
                                 }}
                                 disabled={uploadThumbMutation.isPending && thumbTargetFileName === video.fileName}
-                                className="w-7 h-7 rounded-full bg-black/60 flex items-center justify-center hover:bg-blue-600 transition-colors duration-200"
+                                className="w-7 h-7 rounded-full bg-black/60 flex items-center justify-center hover:bg-blue-600 transition-colors duration-500"
                                 aria-label="Upload thumbnail"
                               >
                                 {uploadThumbMutation.isPending && thumbTargetFileName === video.fileName
@@ -403,7 +411,7 @@ const Gallery = () => {
                               <button
                                 onClick={(e) => { e.stopPropagation(); deleteVideoMutation.mutate(video.fileName); }}
                                 disabled={deleteVideoMutation.isPending}
-                                className="w-7 h-7 rounded-full bg-black/60 flex items-center justify-center hover:bg-red-600 transition-colors duration-200"
+                                className="w-7 h-7 rounded-full bg-black/60 flex items-center justify-center hover:bg-red-600 transition-colors duration-500"
                                 aria-label="Delete video"
                               >
                                 {deleteVideoMutation.isPending
@@ -468,15 +476,16 @@ const Gallery = () => {
       </section>
 
       {/* Image Lightbox */}
-      <AnimatePresence>
-        {selectedImage && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-            onClick={() => setSelectedImage(null)}
-          >
+      {createPortal(
+        <AnimatePresence>
+          {selectedImage && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+              onClick={() => setSelectedImage(null)}
+            >
             <div className="absolute inset-0 bg-black/75 backdrop-blur-md" />
             <motion.div
               initial={{ scale: 0.92, opacity: 0, y: 20 }}
@@ -495,7 +504,7 @@ const Gallery = () => {
                 />
                 <button
                   onClick={() => setSelectedImage(null)}
-                  className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/90 hover:bg-white flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110"
+                  className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/90 hover:bg-white flex items-center justify-center shadow-lg transition-all duration-500 hover:scale-110"
                   aria-label="Close"
                 >
                   <X className="w-4 h-4 text-gray-800" />
@@ -539,9 +548,10 @@ const Gallery = () => {
                 </div>
               </div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      , document.body)}
 
       {/* Video Modal */}
       <Dialog open={!!selectedVideo} onOpenChange={(open) => !open && setSelectedVideo(null)}>

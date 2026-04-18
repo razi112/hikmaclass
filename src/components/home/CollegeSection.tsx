@@ -1,6 +1,7 @@
 import { AnimateIn } from '@/components/AnimateIn';
 import { MapPin, BookOpen, Users, X, Calendar, Image as ImageIcon, Play } from 'lucide-react';
 import { useState, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 
 const VIDEO_ID = 'JCGVD70akss';
 const THUMB = `https://img.youtube.com/vi/${VIDEO_ID}/maxresdefault.jpg`;
@@ -36,11 +37,11 @@ const VideoCard = () => {
             }}
           />
           <div className="absolute inset-0 rounded-xl bg-black/20
-            group-hover:bg-black/10 transition-colors duration-300" />
+            group-hover:bg-black/10 transition-colors duration-500" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div
               className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md border border-white/30
-                flex items-center justify-center transition-all duration-300"
+                flex items-center justify-center transition-all duration-500"
               style={{
                 transform: hovered ? 'scale(1.15)' : 'scale(1)',
                 boxShadow: hovered ? '0 0 40px rgba(255,255,255,0.3)' : '0 4px 20px rgba(0,0,0,0.3)',
@@ -62,15 +63,15 @@ const VideoCard = () => {
         </div>
       </div>
 
-      {/* ── video modal ── */}
-      {modalOpen && (
+      {/* ── video modal via portal ── */}
+      {modalOpen && createPortal(
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
           onClick={() => setModalOpen(false)}
         >
           <div
-            className="relative bg-background rounded-2xl overflow-hidden shadow-2xl w-full max-w-3xl
-              animate-[scaleIn_0.25s_cubic-bezier(0.34,1.56,0.64,1)]"
+            className="relative bg-background rounded-2xl overflow-hidden shadow-2xl w-full max-w-3xl"
+            style={{ animation: 'scaleIn 0.25s cubic-bezier(0.34,1.56,0.64,1) both' }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* modal header */}
@@ -92,10 +93,10 @@ const VideoCard = () => {
             <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
               <iframe
                 className="absolute inset-0 w-full h-full"
-                src={`https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1`}
+                src={`https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&rel=0&modestbranding=1`}
                 title="Islamic Da'wa Academy Akode - Promo Video - Akode Islamic Centre"
                 frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allow="autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
               />
@@ -123,7 +124,7 @@ const VideoCard = () => {
             </div>
           </div>
         </div>
-      )}
+      , document.body)}
     </>
   );
 };
@@ -213,7 +214,7 @@ export const CollegeSection = () => {
 
                 {/* spotlight radial follow */}
                 <div
-                  className="absolute inset-0 pointer-events-none transition-opacity duration-300"
+                  className="absolute inset-0 pointer-events-none transition-opacity duration-500"
                   style={{
                     opacity: hovered ? 1 : 0,
                     background: `radial-gradient(circle 160px at ${spot.x}% ${spot.y}%, rgba(255,255,255,0.12) 0%, transparent 65%)`,
@@ -228,7 +229,7 @@ export const CollegeSection = () => {
               {/* location badge */}
               <div className="absolute bottom-4 left-4 flex items-center gap-2 px-3 py-1.5
                 rounded-full bg-black/50 backdrop-blur-sm border border-white/10
-                transition-all duration-300"
+                transition-all duration-500"
                 style={{ transform: hovered ? 'translateY(-2px)' : 'translateY(0)' }}>
                 <MapPin className="w-3.5 h-3.5 text-cyan-400" />
                 <span className="text-xs text-white font-medium">Akode, Kerala, India</span>
@@ -237,7 +238,7 @@ export const CollegeSection = () => {
               {/* click hint */}
               <div
                 className="absolute inset-0 flex items-center justify-center pointer-events-none
-                  transition-opacity duration-300"
+                  transition-opacity duration-500"
                 style={{ opacity: hovered ? 1 : 0 }}
               >
                 <span className="bg-black/55 text-white text-xs font-medium px-3 py-1.5
@@ -262,7 +263,7 @@ export const CollegeSection = () => {
                 {stats.map((s) => (
                   <div key={s.label}
                     className="relative flex items-start gap-3 p-4 rounded-xl bg-muted/60 border border-border/50
-                      overflow-hidden group transition-all duration-300
+                      overflow-hidden group transition-all duration-500
                       hover:border-cyan-500/50 hover:bg-cyan-500/5
                       hover:shadow-[0_4px_24px_rgba(6,182,212,0.2)]
                       hover:-translate-y-1">
@@ -273,7 +274,7 @@ export const CollegeSection = () => {
                         animate-[shimmerSweep_1.8s_ease-in-out_infinite]" />
                     </div>
                     <div className="w-9 h-9 rounded-lg bg-cyan-500/10 flex items-center justify-center shrink-0
-                      group-hover:bg-cyan-500/20 group-hover:scale-110 transition-all duration-300">
+                      group-hover:bg-cyan-500/20 group-hover:scale-110 transition-all duration-500">
                       <s.icon className="w-4 h-4 text-cyan-500" />
                     </div>
                     <div>
@@ -289,10 +290,10 @@ export const CollegeSection = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-sm font-semibold text-cyan-500
-                  hover:text-cyan-400 transition-colors duration-200 group"
+                  hover:text-cyan-400 transition-colors duration-500 group"
               >
                 Visit Official Website
-                <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
+                <span className="transition-transform duration-500 group-hover:translate-x-1">→</span>
               </a>
             </div>
           </AnimateIn>
@@ -316,14 +317,14 @@ export const CollegeSection = () => {
       </div>
 
       {/* ── Lightbox ── */}
-      {lightbox && (
+      {lightbox && createPortal(
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm"
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm"
           onClick={() => setLightbox(false)}
         >
           <div
-            className="relative bg-background rounded-2xl overflow-hidden shadow-2xl max-w-2xl w-full
-              animate-[scaleIn_0.25s_cubic-bezier(0.34,1.56,0.64,1)]"
+            className="relative bg-background rounded-2xl overflow-hidden shadow-2xl max-w-2xl w-full"
+            style={{ animation: 'scaleIn 0.25s cubic-bezier(0.34,1.56,0.64,1) both' }}
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -368,7 +369,7 @@ export const CollegeSection = () => {
             </div>
           </div>
         </div>
-      )}
+      , document.body)}
     </section>
   );
 };

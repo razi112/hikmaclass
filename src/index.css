@@ -254,13 +254,14 @@
   }
 
   /* ── Global div hover: smooth stylish transition ── */
-  /* Exclude fixed/sticky containers and their children */
-  div:not([class*="fixed"]):not([class*="sticky"]):not(nav *):not(header *) {
+  div {
     transition:
+      transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
       background-color 0.4s ease,
       border-color 0.4s ease,
       opacity 0.4s ease,
-      box-shadow 0.4s ease;
+      filter 0.4s ease;
   }
 
   /* Hover effects */
@@ -494,96 +495,3 @@ img {
 .section-animate.in-view > *:nth-child(4) { transition-delay: 240ms; }
 .section-animate.in-view > *:nth-child(5) { transition-delay: 320ms; }
 .section-animate.in-view > *:nth-child(6) { transition-delay: 400ms; }
-
-/* ── Navbar wrapper always fixed, never moves ── */
-.navbar-wrapper {
-  transform: none !important;
-  transition: none !important;
-  will-change: auto;
-}
-
-/* ════════════════════════════════════════════════
-   GLOBAL SMOOTH HOVER ANIMATIONS
-   ════════════════════════════════════════════════ */
-
-/* ── All cards get smooth lift on hover ── */
-.bg-card,
-[class*="rounded-"][class*="bg-card"],
-[class*="rounded-2xl"],
-[class*="rounded-3xl"] {
-  transition:
-    box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-    border-color 0.35s ease,
-    background-color 0.35s ease !important;
-}
-
-/* ── Buttons: spring scale ── */
-button:not([disabled]),
-[role="button"]:not([disabled]) {
-  transition:
-    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
-    box-shadow 0.25s ease,
-    background-color 0.25s ease,
-    color 0.25s ease,
-    border-color 0.25s ease,
-    opacity 0.25s ease !important;
-}
-button:not([disabled]):active,
-[role="button"]:not([disabled]):active {
-  transform: scale(0.96) !important;
-}
-
-/* ── Links: smooth color + underline ── */
-a {
-  transition:
-    color 0.2s ease,
-    opacity 0.2s ease,
-    text-decoration-color 0.2s ease !important;
-}
-
-/* ── Images: smooth scale on hover ── */
-img:not([class*="rounded-full"]) {
-  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease !important;
-}
-
-/* ── Input fields: smooth focus ring ── */
-input, textarea, select {
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    background-color 0.2s ease !important;
-}
-
-/* ── Icons: smooth color + scale ── */
-svg {
-  transition: color 0.2s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-}
-
-/* ── Spans & text elements ── */
-span, p, h1, h2, h3, h4, h5, h6 {
-  transition: color 0.25s ease, opacity 0.25s ease !important;
-}
-
-/* ── Smooth section entrance via AnimateIn ── */
-.animate-on-scroll {
-  will-change: opacity, transform;
-}
-
-/* ── Footer links hover ── */
-footer a:hover {
-  opacity: 1 !important;
-  letter-spacing: 0.02em;
-}
-
-/* ── Respect reduced motion ── */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-  [data-animate] {
-    opacity: 1 !important;
-    transform: none !important;
-  }
-}

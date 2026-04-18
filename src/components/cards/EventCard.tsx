@@ -48,7 +48,7 @@ export const EventCard = ({ event }: EventCardProps) => {
             </div>
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-          <div className="absolute top-4 left-4 transform group-hover:scale-110 transition-transform duration-300">
+          <div className="absolute top-4 left-4 transform group-hover:scale-110 transition-transform duration-500">
             <Badge className={`${colorClass} shadow-lg`}>
               {event.category.charAt(0).toUpperCase() + event.category.slice(1)}
             </Badge>
@@ -56,25 +56,25 @@ export const EventCard = ({ event }: EventCardProps) => {
         </div>
 
         <div className="p-5">
-          <h3 className="font-serif text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors duration-300">
+          <h3 className="font-serif text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors duration-500">
             {event.title}
           </h3>
-          <p className="text-sm text-muted-foreground line-clamp-2 mb-4 group-hover:text-foreground transition-colors duration-300">
+          <p className="text-sm text-muted-foreground line-clamp-2 mb-4 group-hover:text-foreground transition-colors duration-500">
             {event.description}
           </p>
           <div className="space-y-2 text-sm">
-            <div className="flex items-center gap-2 text-muted-foreground group-hover:translate-x-1 transition-transform duration-300">
+            <div className="flex items-center gap-2 text-muted-foreground group-hover:translate-x-1 transition-transform duration-500">
               <Calendar className="w-4 h-4 text-secondary" />
               <span>{formatDate(event.date)}</span>
             </div>
             {event.time && (
-              <div className="flex items-center gap-2 text-muted-foreground group-hover:translate-x-1 transition-transform duration-300 delay-75">
+              <div className="flex items-center gap-2 text-muted-foreground group-hover:translate-x-1 transition-transform duration-500 delay-75">
                 <Clock className="w-4 h-4 text-secondary" />
                 <span>{event.time}</span>
               </div>
             )}
             {event.location && (
-              <div className="flex items-center gap-2 text-muted-foreground group-hover:translate-x-1 transition-transform duration-300 delay-100">
+              <div className="flex items-center gap-2 text-muted-foreground group-hover:translate-x-1 transition-transform duration-500 delay-100">
                 <MapPin className="w-4 h-4 text-secondary" />
                 <span className="line-clamp-1">{event.location}</span>
               </div>

@@ -45,8 +45,8 @@ export function StudentProfileDialog({
   }) => {
     if (!value) return null;
     return (
-      <div className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors duration-300 group">
-        <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
+      <div className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors duration-500 group">
+        <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors duration-500">
           <Icon className="w-4 h-4 text-primary" />
         </div>
         <div className="flex-1">
@@ -174,7 +174,7 @@ export function StudentProfileDialog({
                       href={student.socialLinks.linkedin}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500/10 text-blue-600 hover:bg-blue-500/20 transition-all duration-300 hover:scale-105 hover:-translate-y-1"
+                      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500/10 text-blue-600 hover:bg-blue-500/20 transition-all duration-500 hover:scale-105 hover:-translate-y-1"
                     >
                       <Linkedin className="w-4 h-4" />
                       <span className="text-sm font-medium">LinkedIn</span>
@@ -185,7 +185,7 @@ export function StudentProfileDialog({
                       href={student.socialLinks.twitter}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-sky-500/10 text-sky-600 hover:bg-sky-500/20 transition-all duration-300 hover:scale-105 hover:-translate-y-1"
+                      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-sky-500/10 text-sky-600 hover:bg-sky-500/20 transition-all duration-500 hover:scale-105 hover:-translate-y-1"
                     >
                       <Twitter className="w-4 h-4" />
                       <span className="text-sm font-medium">Twitter</span>
@@ -196,7 +196,7 @@ export function StudentProfileDialog({
                       href={student.socialLinks.facebook}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600/10 text-blue-700 hover:bg-blue-600/20 transition-all duration-300 hover:scale-105 hover:-translate-y-1"
+                      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600/10 text-blue-700 hover:bg-blue-600/20 transition-all duration-500 hover:scale-105 hover:-translate-y-1"
                     >
                       <Facebook className="w-4 h-4" />
                       <span className="text-sm font-medium">Facebook</span>

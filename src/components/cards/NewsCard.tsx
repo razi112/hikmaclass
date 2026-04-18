@@ -27,7 +27,7 @@ export const NewsCard = ({ news }: NewsCardProps) => {
   };
 
   return (
-    <Card className="group overflow-hidden hover:shadow-elevated transition-all duration-300 animate-fade-in">
+    <Card className="group overflow-hidden hover:shadow-elevated transition-all duration-500 animate-fade-in">
       <CardContent className="p-0">
         <div className="relative h-40 overflow-hidden bg-muted">
           {imgSrc ? (

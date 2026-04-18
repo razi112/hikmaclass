@@ -79,13 +79,13 @@ export const HeroSection = () => {
             <AnimateIn direction="up" delay={3700}>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link to="/students">
-                  <Button size="lg" className="w-full sm:w-auto bg-secondary text-secondary-foreground hover:bg-secondary/90 gap-2 transition-transform duration-200 hover:scale-105 active:scale-95">
+                  <Button size="lg" className="w-full sm:w-auto bg-secondary text-secondary-foreground hover:bg-secondary/90 gap-2 transition-transform duration-500 hover:scale-105 active:scale-95">
                     Explore Members
                     <ArrowRight className="w-4 h-4" />
                   </Button>
                 </Link>
                 <Link to="/events">
-                  <Button size="lg" variant="outline" className="w-full sm:w-auto border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 transition-transform duration-200 hover:scale-105 active:scale-95">
+                  <Button size="lg" variant="outline" className="w-full sm:w-auto border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 transition-transform duration-500 hover:scale-105 active:scale-95">
                     Upcoming Events
                   </Button>
                 </Link>

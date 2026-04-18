@@ -8,7 +8,7 @@ const getAvatarUrl = (name: string) =>
 
 const WingDetail = () => {
   const { wingId } = useParams<{ wingId: string }>();
-  const wing = wingsData.find(w => w.id === wingId);
+  const wing = wingsData.find(w => w.id.toLowerCase() === wingId?.toLowerCase());
 
   if (!wing) {
     return (
@@ -63,7 +63,7 @@ const WingDetail = () => {
                   {wing.members.map((member, i) => (
                     <div key={i} className="flex items-center gap-3 group">
                       <div className={`relative w-12 h-12 rounded-full p-[2px] bg-gradient-to-br ${wing.color}
-                        shadow-md transition-transform duration-300 group-hover:scale-105`}>
+                        shadow-md transition-transform duration-500 group-hover:scale-105`}>
                         <img
                           src={getAvatarUrl(member.name)}
                           alt={member.name}
@@ -96,12 +96,12 @@ const WingDetail = () => {
                     data-animate="up"
                     data-delay={String(i * 80)}
                     className="group relative rounded-2xl bg-card border border-border/60 p-5
-                      hover:border-transparent transition-all duration-300 overflow-hidden
+                      hover:border-transparent transition-all duration-500 overflow-hidden
                       hover:shadow-[0_4px_24px_rgba(0,0,0,0.1)]">
 
                     {/* hover gradient border */}
                     <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${wing.color}
-                      opacity-0 group-hover:opacity-100 transition-opacity duration-400 -z-10`} />
+                      opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10`} />
                     <div className="absolute inset-[1px] rounded-2xl bg-card -z-10" />
 
                     {/* shimmer */}
@@ -112,7 +112,7 @@ const WingDetail = () => {
                     <div className="flex items-start gap-4">
                       <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${wing.color}
                         flex items-center justify-center shrink-0 shadow-md mt-0.5
-                        transition-transform duration-300 group-hover:scale-110`}>
+                        transition-transform duration-500 group-hover:scale-110`}>
                         <CheckCircle2 className="w-4 h-4 text-white" />
                       </div>
                       <div className="flex-1 min-w-0">
