@@ -7,7 +7,9 @@ import { useState, useRef, useCallback } from 'react';
 const classTeacher = {
   name: 'Hafiz Ahmed Dilqash Furqani',
   title: 'Class Teacher · Hikma Class 2026',
-  photo: 'https://ui-avatars.com/api/?name=Ahmed+Dilqash+Furqani&background=1e3a5f&color=fff&size=300&bold=true',
+  photo: '/images/usthad%20(1).jpg',
+  photo2: '/images/usthad%20(2).jpg',
+  fallback: 'https://ui-avatars.com/api/?name=Ahmed+Dilqash+Furqani&background=1e3a5f&color=fff&size=300&bold=true',
   quote: "It has been a privilege to guide this remarkable class. Each student carries the spirit of Hikma — curiosity, integrity, and the drive to make a difference. I am proud of every one of you.",
 };
 
@@ -68,15 +70,18 @@ const About = () => {
 
               <div
                 ref={cardRef}
-                className="relative rounded-3xl overflow-hidden bg-card cursor-default transition-transform duration-500"
-                style={{ transform: hovered ? 'scale(1.012)' : 'scale(1)' }}
+                className="relative rounded-3xl overflow-hidden bg-card cursor-default"
+                style={{
+                  transform: hovered ? 'scale(1.012)' : 'scale(1)',
+                  transition: 'transform 0.5s cubic-bezier(0.16,1,0.3,1)',
+                }}
                 onMouseEnter={() => setHovered(true)}
                 onMouseLeave={() => setHovered(false)}
                 onMouseMove={handleMouseMove}
               >
                 {/* spotlight radial follow */}
                 <div
-                  className="absolute inset-0 pointer-events-none transition-opacity duration-300 rounded-3xl"
+                  className="absolute inset-0 pointer-events-none transition-opacity duration-500 rounded-3xl"
                   style={{
                     opacity: hovered ? 1 : 0,
                     background: `radial-gradient(circle 280px at ${spotlight.x}% ${spotlight.y}%, rgba(139,92,246,0.12) 0%, transparent 70%)`,
@@ -92,7 +97,8 @@ const About = () => {
                       transition-all duration-500
                       ${hovered ? 'shadow-[0_0_52px_rgba(139,92,246,0.65)] rotate-1' : 'shadow-[0_0_32px_rgba(139,92,246,0.35)] rotate-0'}`}>
                       <img src={classTeacher.photo} alt={classTeacher.name}
-                        className="w-full h-full rounded-xl object-cover" />
+                        className="w-full h-full rounded-xl object-cover"
+                        onError={(e) => { (e.target as HTMLImageElement).src = classTeacher.fallback; }} />
                     </div>
                     <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br from-violet-500/30 to-cyan-500/20
                       blur-xl -z-10 scale-110 transition-opacity duration-500 ${hovered ? 'opacity-100' : 'opacity-50'}`} />
@@ -100,13 +106,13 @@ const About = () => {
                     {/* floating badge */}
                     <div className={`absolute -top-3 -right-3 px-2.5 py-1 rounded-full text-xs font-semibold
                       bg-gradient-to-r from-violet-500 to-cyan-500 text-white shadow-lg
-                      transition-all duration-400 ${hovered ? 'opacity-100 scale-100' : 'opacity-0 scale-75'}`}>
+                      transition-all duration-500 ${hovered ? 'opacity-100 scale-100' : 'opacity-0 scale-75'}`}>
                       ✦ Mentor
                     </div>
                   </div>
 
                   <div className="flex-1 text-center md:text-left">
-                    <Quote className={`w-8 h-8 mb-3 mx-auto md:mx-0 transition-all duration-300
+                    <Quote className={`w-8 h-8 mb-3 mx-auto md:mx-0 transition-all duration-500
                       ${hovered ? 'text-violet-400 scale-110' : 'text-violet-400/50 scale-100'}`} />
                     <p className="text-foreground/90 text-lg leading-relaxed font-serif italic mb-6">
                       "{classTeacher.quote}"
@@ -114,7 +120,7 @@ const About = () => {
                     <div className={`h-px w-16 mb-4 mx-auto md:mx-0 bg-gradient-to-r from-violet-500 to-cyan-400
                       transition-all duration-500 ${hovered ? 'w-32 opacity-100' : 'w-8 opacity-40'}`} />
                     <p className="font-bold text-foreground text-xl font-serif">{classTeacher.name}</p>
-                    <p className={`text-sm font-medium mt-0.5 transition-colors duration-300
+                    <p className={`text-sm font-medium mt-0.5 transition-colors duration-500
                       ${hovered ? 'text-cyan-500' : 'text-violet-500'}`}>{classTeacher.title}</p>
                   </div>
                 </div>
@@ -144,6 +150,7 @@ const About = () => {
                   ? '0 20px 50px rgba(0,0,0,0.15)'
                   : '0 4px 20px rgba(0,0,0,0.08)',
                 transform: tcHovered ? 'translateY(-8px) scale(1.015)' : 'translateY(0) scale(1)',
+                transition: 'transform 0.5s cubic-bezier(0.16,1,0.3,1), box-shadow 0.5s ease, border-color 0.5s ease',
               }}
               onMouseEnter={() => setTcHovered(true)}
               onMouseLeave={() => setTcHovered(false)}
@@ -176,12 +183,21 @@ const About = () => {
                 <div className="flex flex-col items-center gap-4">
                   <div className="relative">
                     <div className="w-40 h-40 rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-600
-                      flex items-center justify-center shadow-xl transition-all duration-400"
+                      flex items-center justify-center shadow-xl overflow-hidden"
                       style={{
                         transform: tcHovered ? 'scale(1.05) rotate(-1deg)' : 'scale(1) rotate(0deg)',
                         boxShadow: tcHovered ? '0 0 40px rgba(20,184,166,0.4)' : '',
+                        transition: 'transform 0.5s cubic-bezier(0.16,1,0.3,1), box-shadow 0.5s ease',
                       }}>
-                      <span className="text-white font-bold text-5xl tracking-tight">HD</span>
+                      <img
+                        src={classTeacher.photo2}
+                        alt={classTeacher.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          const img = e.target as HTMLImageElement;
+                          img.src = classTeacher.fallback;
+                        }}
+                      />
                     </div>
                     <div className="absolute -bottom-2 -right-2 px-2.5 py-1 rounded-full text-xs font-bold
                       bg-amber-500 text-white shadow-lg">
@@ -193,12 +209,12 @@ const About = () => {
                   <div className="flex flex-col gap-2 w-full">
                     <button className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg
                       bg-teal-500/10 border border-teal-500/30 text-teal-600 text-sm font-medium
-                      hover:bg-teal-500 hover:text-white transition-all duration-200">
+                      hover:bg-teal-500 hover:text-white transition-all duration-500">
                       <Mail className="w-4 h-4" /> Email
                     </button>
                     <button className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg
                       bg-cyan-500/10 border border-cyan-500/30 text-cyan-600 text-sm font-medium
-                      hover:bg-cyan-500 hover:text-white transition-all duration-200">
+                      hover:bg-cyan-500 hover:text-white transition-all duration-500">
                       <Phone className="w-4 h-4" /> Call
                     </button>
                   </div>
@@ -216,10 +232,10 @@ const About = () => {
                   <div className="grid gap-3">
                     {/* education */}
                     <div className="p-4 rounded-xl bg-teal-500/5 border border-teal-500/20
-                      hover:bg-teal-500/10 hover:border-teal-500/30 transition-all duration-300 group">
+                      hover:bg-teal-500/10 hover:border-teal-500/30 transition-all duration-500 group">
                       <h4 className="flex items-center gap-2 font-bold text-foreground text-sm mb-2">
                         <div className="w-7 h-7 rounded-lg bg-teal-500/15 flex items-center justify-center
-                          group-hover:bg-teal-500/25 transition-colors">
+                          group-hover:bg-teal-500/25 transition-colors duration-500">
                           <GraduationCap className="w-4 h-4 text-teal-600" />
                         </div>
                         Education
@@ -236,10 +252,10 @@ const About = () => {
 
                     {/* specialization */}
                     <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20
-                      hover:bg-amber-500/10 hover:border-amber-500/30 transition-all duration-300 group">
+                      hover:bg-amber-500/10 hover:border-amber-500/30 transition-all duration-500 group">
                       <h4 className="flex items-center gap-2 font-bold text-foreground text-sm mb-1">
                         <div className="w-7 h-7 rounded-lg bg-amber-500/15 flex items-center justify-center
-                          group-hover:bg-amber-500/25 transition-colors">
+                          group-hover:bg-amber-500/25 transition-colors duration-500">
                           <Star className="w-4 h-4 text-amber-600" />
                         </div>
                         Specialization
@@ -249,10 +265,10 @@ const About = () => {
 
                     {/* languages */}
                     <div className="p-4 rounded-xl bg-blue-500/5 border border-blue-500/20
-                      hover:bg-blue-500/10 hover:border-blue-500/30 transition-all duration-300 group">
+                      hover:bg-blue-500/10 hover:border-blue-500/30 transition-all duration-500 group">
                       <h4 className="flex items-center gap-2 font-bold text-foreground text-sm mb-2">
                         <div className="w-7 h-7 rounded-lg bg-blue-500/15 flex items-center justify-center
-                          group-hover:bg-blue-500/25 transition-colors">
+                          group-hover:bg-blue-500/25 transition-colors duration-500">
                           <Globe className="w-4 h-4 text-blue-600" />
                         </div>
                         Languages
